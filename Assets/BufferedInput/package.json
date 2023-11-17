@@ -1,0 +1,12 @@
+{
+    "name": "pyerter.squires.bufferedinput",
+    "version": "1.0.0",
+    "description": "This package expands upon Unity's new InputSystem and provides easy implementation of buffering and control locking for using inputs. Control locking allows you to add locks to the ControlLockManager in order to prevent certain actions from going through. Buffering allows these actions to remain in a buffer for a designated period of time before they either go through or are removed.",
+    "displayName": "Buffered Input",
+    "unity": "2022.3",
+    "author": "Porter Squires",
+    "dependencies": {
+        "com.unity.inputsystem": "1.7.0"
+    },
+    "hideInEditor": false
+}

@@ -1,0 +1,25 @@
+{
+    "name": "pyerter.squires.bufferedinput.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:29cdeaa5e72d5f442a204a69955220e4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "psbi_v_def"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.7.0",
+            "define": "psbi_v_def"
+        }
+    ],
+    "noEngineReferences": false
+}
