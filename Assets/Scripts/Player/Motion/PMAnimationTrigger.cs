@@ -7,6 +7,7 @@ using UnityEngine;
 public class PMAnimationTrigger : PlayerMotion
 {
     [SerializeField] protected string animationName = "Punch";
+    [SerializeField] protected int animationLayerIndex = 1;
     protected bool activeMotion = false;
     public override bool ActiveMotion { get { return activeMotion; } }
     protected StandardControlLocker cachedLocker;
@@ -31,8 +32,11 @@ public class PMAnimationTrigger : PlayerMotion
 
     public override List<MotionDataModifier> UpdateMotion(PlayerController controller, MotionData motionData = default)
     {
-        if (!controller.ComplexAnimator.StateNameIs(animationName))
+        if (!controller.ComplexAnimator.StateNameIs(animationName, animationLayerIndex))
+        {
             activeMotion = false;
+            Debug.Log("Ending animation: " + animationName);
+        }
         //controller.MotionController.Move(controller, 0);
         if (!activeMotion && cachedLocker != null)
         {

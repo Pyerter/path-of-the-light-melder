@@ -208,6 +208,10 @@ public class PlayerMotionController : MonoBehaviour
         {
             punchMotion.motion.UpdateMotion(controller, motionData);
         }
+        if (blockMotion.motion.ActiveMotion)
+        {
+            blockMotion.motion.UpdateMotion(controller, motionData);
+        }
 
         return motionData;
     }

@@ -31,7 +31,7 @@ public class ComplexAnimator : MonoBehaviour
 
     public bool StateNameIs(string name, int layerIndex = 0)
     {
-        return Anim.GetCurrentAnimatorStateInfo(0).IsName(name);
+        return Anim.GetCurrentAnimatorStateInfo(layerIndex).IsName(name);
     }
 }
 
