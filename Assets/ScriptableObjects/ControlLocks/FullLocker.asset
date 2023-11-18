@@ -17,4 +17,4 @@ MonoBehaviour:
     priority: 0
     locks:
       mask: 24583
-      name: Composite
+      name: Full Locker

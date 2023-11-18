@@ -11,6 +11,7 @@ namespace BufferedInput
     public class StandardControlLockerEditor : Editor
     {
         bool[] toggles = null;
+        string currentName = "";
 
         public override void OnInspectorGUI()
         {
@@ -29,6 +30,11 @@ namespace BufferedInput
                 }
             }
 
+            if (string.IsNullOrEmpty(currentName))
+                currentName = myTarget.Lock.Name;
+
+            currentName = EditorGUILayout.TextField("Name", currentName);
+
             EditorGUILayout.Space(10);
 
             bool changedToggle = false;
@@ -41,11 +47,14 @@ namespace BufferedInput
                     changedToggle = true;
             }
 
-            if (!changedToggle)
-                UpdateToggles(myTarget);
+            if (!currentName.Equals(myTarget.Lock.Name))
+                changedToggle = true;
+
+            if (changedToggle)
+                UpdateToggles(myTarget, currentName);
         }
 
-        protected void UpdateToggles(StandardControlLocker myTarget)
+        protected void UpdateToggles(StandardControlLocker myTarget, string lockName)
         {
             List<ActionMask> usedToggles = new List<ActionMask>();
             for (int i = 0; i < toggles.Length; i++)
@@ -55,7 +64,7 @@ namespace BufferedInput
                     usedToggles.Add(myTarget.LockScheme.possibleMasks[i]);
                 }
             }
-            myTarget.Lock.SetComposite(usedToggles);
+            myTarget.Lock.SetComposite(usedToggles, lockName);
             EditorUtility.SetDirty(myTarget);
         }
     }

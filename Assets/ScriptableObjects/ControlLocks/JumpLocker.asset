@@ -17,4 +17,4 @@ MonoBehaviour:
     priority: 0
     locks:
       mask: 8192
-      name: Composite
+      name: Jump Locker

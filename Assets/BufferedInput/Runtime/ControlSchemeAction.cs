@@ -128,7 +128,12 @@ namespace BufferedInput
 
         public override string ToString()
         {
-            return "" + mask + " = " + Convert.ToString(mask, 2).PadLeft(64, '0');
+            return ToStringFormatted();
+        }
+
+        public string ToStringFormatted(int padString = 64)
+        {
+            return "" + mask + " = " + Convert.ToString(mask, 2).PadLeft(padString, '0');
         }
 
         public bool Equals(ActionMask am)

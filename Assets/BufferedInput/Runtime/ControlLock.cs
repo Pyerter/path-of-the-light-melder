@@ -23,6 +23,7 @@ namespace BufferedInput
         /// </summary>
         [SerializeField] private ActionMask locks;
         public ActionMask Locks { get { return locks; } }
+        public string Name { get { return locks.name; } set { locks = new ActionMask(locks.Mask, value); } }
 
         public ControlLock()
         {
@@ -39,44 +40,44 @@ namespace BufferedInput
             SetComposite(locks);
         }
 
-        public void SetComposite(List<ControlLocker> locks)
+        public void SetComposite(List<ControlLocker> locks, string lockName = "Composite")
         {
             long bitMask = 0L;
             foreach (ControlLocker locker in locks)
             {
                 bitMask |= locker.Lock.Locks.Mask;
             }
-            this.locks = new ActionMask(bitMask, "Composite");
+            this.locks = new ActionMask(bitMask, lockName);
         }
 
-        public void SetComposite(List<ActionMask> locks)
+        public void SetComposite(List<ActionMask> locks, string lockName = "Composite")
         {
             long bitMask = 0L;
             foreach (ActionMask mask in locks)
             {
                 bitMask |= mask.Mask;
             }
-            this.locks = new ActionMask(bitMask, "Composite");
+            this.locks = new ActionMask(bitMask, lockName);
         }
 
-        public void RemoveFromComposite(List<ControlLocker> locks)
+        public void RemoveFromComposite(List<ControlLocker> locks, string lockName = "Composite")
         {
             long bitMask = this.locks.Mask;
             foreach (ControlLocker locker in locks)
             {
                 bitMask &= ~locker.Lock.Locks.Mask;
             }
-            this.locks = new ActionMask(bitMask, "Composite");
+            this.locks = new ActionMask(bitMask, lockName);
         }
 
-        public void RemoveFromComposite(List<ActionMask> locks)
+        public void RemoveFromComposite(List<ActionMask> locks, string lockName = "Composite")
         {
             long bitMask = this.locks.Mask;
             foreach (ActionMask mask in locks)
             {
                 bitMask &= ~mask.Mask;
             }
-            this.locks = new ActionMask(bitMask, "Composite");
+            this.locks = new ActionMask(bitMask, lockName);
         }
 
         /// <summary>
