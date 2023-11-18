@@ -33,9 +33,11 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
     public HotSwapState CurrentState { get { return hotSwaps[CurrentIndex]; } }
     public HotSwapState NextState { get { return hotSwaps[NextIndex]; } }
 
-    protected HotSwapSupplier pendingHotSwap;
+    protected HotSwapSupplier pendingHotSwap = null;
     public HotSwapSupplier PendingHotSwap { get { return pendingHotSwap; } set { pendingHotSwap = value; } }
     public bool HotSwapStateIsName(string name) { return ComplexAnim.Anim.GetCurrentAnimatorStateInfo(hotSwapLayer).IsName(name); }
+
+    protected bool changedOverrides = false;
 
     private void Awake()
     {
@@ -59,7 +61,7 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
         for (int i = 0; i < hotSwaps.Length; i++)
         {
             clipNames[i] = hotSwaps[i].StateName;
-            clips[i] = hotSwaps[i].CurrentAnimation.Clip;
+            clips[i] = hotSwaps[i].CurrentAnimation != null ? hotSwaps[i].CurrentAnimation.Clip : null;
         }
     }
 
@@ -68,6 +70,8 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
         int targetIndex = CurrentState.NoAnimation ? CurrentIndex : NextIndex;
         hotSwaps[targetIndex].TrySetCurrentAnimation(animation);
         HotBool = true;
+        changedOverrides = true;
+        Debug.Log("Added animation");
     }
 
     public bool TryAddAnimation(HotSwapAnimation animation)
@@ -90,6 +94,7 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
         if (CurrentState.HasAnimation && !currentStateIsPlaying)
         {
             CurrentState.ClearState();
+            changedOverrides = true;
             CurrentIndex = NextIndex;
         }
 
@@ -115,7 +120,6 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
                 CurrentIndex = current;
                 return false;
             }
-            hotSwaps[current].ClearState();
         }
 
         CurrentIndex = 0;
@@ -138,7 +142,16 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
         bool hotSwapQuery = PendingHotSwap.QueryHotSwap(this, out animation);
         if (!hotSwapQuery)
             PendingHotSwap = null;
+        if (animation != null)
+            Debug.Log("Grabbed animation from pending hot swap");
         return animation != null;
+    }
+
+    private void FixedUpdate()
+    {
+        UpdateStates();
+        if (changedOverrides)
+            UpdateOverrides();
     }
 
 }

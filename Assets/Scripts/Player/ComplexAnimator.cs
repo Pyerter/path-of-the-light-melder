@@ -11,6 +11,9 @@ public class ComplexAnimator : MonoBehaviour
     [SerializeField] protected AnimatorOverrider animOverrider;
     public AnimatorOverrider AnimOverrider { get { return animOverrider; } }
 
+    [SerializeField] protected ComplexAnimatorHotSwapper hotSwapper;
+    public ComplexAnimatorHotSwapper HotSwapper { get { if (hotSwapper == null) hotSwapper = GetComponent<ComplexAnimatorHotSwapper>(); return hotSwapper; } }
+
     private void Awake()
     {
         if (anim == null)

@@ -1076,7 +1076,7 @@ MonoBehaviour:
     motion: {fileID: 11400000, guid: 8051817ff01a02348958608683f3c429, type: 2}
     control: {fileID: 11400000, guid: bd3923f33c438bb4484c6043e82ca132, type: 2}
   punchMotion:
-    motion: {fileID: 11400000, guid: 73752372c5c1f35478aa94d69be0fdb2, type: 2}
+    motion: {fileID: 11400000, guid: 23af4118c1a988c4dabd01d6d0b12868, type: 2}
     control: {fileID: 11400000, guid: bd3923f33c438bb4484c6043e82ca132, type: 2}
   walkingCollider: {fileID: 708014119}
   staticMaterial: {fileID: 6200000, guid: 4ee0ed6d38ce01544bd95981c18df68f, type: 2}
@@ -1539,6 +1539,7 @@ GameObject:
   - component: {fileID: 1241440340}
   - component: {fileID: 1241440339}
   - component: {fileID: 1241440338}
+  - component: {fileID: 1241440341}
   m_Layer: 0
   m_Name: Visuals
   m_TagString: Untagged
@@ -1577,6 +1578,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 0}
   animOverrider: {fileID: 0}
+  hotSwapper: {fileID: 0}
 --- !u!114 &1241440339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1589,7 +1591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d1e8459fed82b41994aa6c0748bb9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAnim: {fileID: 0}
+  currentAnim: {fileID: 22100000, guid: 1c522574d9a82da489ab6e3c58d5652e, type: 2}
 --- !u!95 &1241440340
 Animator:
   serializedVersion: 5
@@ -1611,6 +1613,32 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1241440341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1241440336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7ddd5021161d274cb33a1fa64f466eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  complexAnim: {fileID: 1241440338}
+  hotBool: HotBool
+  hotTrigger: HotTrigger
+  hotSkipTrigger: HotSkipTrigger
+  hotSwapState1:
+    stateName: HotSwap1
+    currentAnimation: {fileID: 0}
+  hotSwapState2:
+    stateName: HotSwap2
+    currentAnimation: {fileID: 0}
+  hotSwapState3:
+    stateName: HotSwap3
+    currentAnimation: {fileID: 0}
+  hotSwapLayer: 2
 --- !u!1 &1247185912
 GameObject:
   m_ObjectHideFlags: 0
