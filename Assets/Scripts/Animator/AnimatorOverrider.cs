@@ -74,6 +74,7 @@ public class AnimatorOverrider : MonoBehaviour
                 clipsDebugMessage += tab2 + overrides.recentDebugMessage;
             } else
             {
+                overrides[clipNames[i]] = null;
                 clipsDebugMessage += tab2 + "Missing Clip: " + clipNames[i];
             }
             clipsDebugMessage += "\n";
