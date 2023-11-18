@@ -43,6 +43,7 @@ public class PlayerMotionController : MonoBehaviour
     [Header("Jumping")]
     [SerializeField] private FloatState jumping = new FloatState(0); // threshold is fall speed threshold
     public float GetFallSpeed() { return rb.velocity.y; }
+    public bool removeJumpLockOnGrounded = false;
 
     [Header("2D Facing")]
     [SerializeField] private bool flipped = false; // false is right, true is left
@@ -80,7 +81,7 @@ public class PlayerMotionController : MonoBehaviour
         if (hittingGround)
         {
             grounded.Update(true);
-            Debug.Log("Raycast hit ground, current grounded value: " + grounded.previous + " at " + GameManager.Time);
+            // Debug.Log("Raycast hit ground, current grounded value: " + grounded.previous + " at " + GameManager.Time);
         }
         return grounded.TryUpdateAbove(false);
     }
@@ -92,19 +93,22 @@ public class PlayerMotionController : MonoBehaviour
         return jumping;
     }
 
-    public bool Jump()
+    public bool Jump(PlayerController controller)
     {
         if (grounded && !IsJumping())
         {
             Vector2 velocity = rb.velocity;
             velocity.y = jumpSpeed;
             rb.velocity = velocity;
+            removeJumpLockOnGrounded = true;
+            controller.AddLocker(controller.JumpLocker);
+            Debug.Log("Added jump locker");
             return true;
         }
         return false;
     }
 
-    public void Move(float movement)
+    public void Move(PlayerController controller, float movement)
     {
         CheckFlip(movement);
         MoveForward(movement * MoveSpeed);
@@ -188,6 +192,12 @@ public class PlayerMotionController : MonoBehaviour
         DragMomentum();
         IsGrounded();
         IsJumping();
+        if (grounded && !jumping && removeJumpLockOnGrounded)
+        {
+            controller.RemoveLocker(controller.JumpLocker);
+            removeJumpLockOnGrounded = false;
+            Debug.Log("Removed jump locker");
+        }
 
         walkingCollider.sharedMaterial = inputMoving ? kineticMaterial : staticMaterial;
         inputMoving = false;

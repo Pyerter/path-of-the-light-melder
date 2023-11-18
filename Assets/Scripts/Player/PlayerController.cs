@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] protected PlayerMotionController motionController;
     public PlayerMotionController MotionController { get { return motionController; } }
 
+    [SerializeField] protected ComplexAnimator complexAnimator;
+    public ComplexAnimator ComplexAnimator { get { return complexAnimator; } }
+
     [Header("Control Lockers")]
     [SerializeField] protected StandardControlLocker runLocker;
     public StandardControlLocker RunLocker { get { return runLocker; } }
@@ -20,7 +23,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] protected StandardControlLocker fullLocker;
     public StandardControlLocker FullLocker { get { return fullLocker; } }
 
-    public bool Grounded { get { return true; } }
+    public bool Grounded { get { return MotionController.Grounded; } }
 
     private void Awake()
     {
@@ -28,11 +31,14 @@ public class PlayerController : MonoBehaviour
             motionController = GetComponentInChildren<PlayerMotionController>();
         if (inputManager == null)
             inputManager = GetComponent<BufferedInputManager>();
+        if (complexAnimator == null)
+            complexAnimator = GetComponentInChildren<ComplexAnimator>();
     }
 
     private void FixedUpdate()
     {
-        MotionController.UpdateMotion(this);
+        MotionData data = MotionController.UpdateMotion(this);
+        complexAnimator.AcceptSettings(data.AsSettings());
     }
 
     public void AddLocker(StandardControlLocker locker)
@@ -48,19 +54,30 @@ public class PlayerController : MonoBehaviour
     public void Move(InputData input)
     {
         Vector2 movement = input.Direction.current;
-        MotionController.Move(movement.x);
+        MotionController.Move(this, movement.x);
     }
 
     public void Jump(InputData input)
     {
         if (input.IsPending())
         {
-            MotionController.Jump();
+            MotionController.Jump(this);
         }
     }
 
     public void Punch(InputData input)
     {
-        MotionController.PunchMotion.motion.InputMotion(this, input, MotionController.PunchMotion.control);
+        InputMotion(MotionController.PunchMotion, input);
+    }
+
+    public void Block(InputData input)
+    {
+        InputMotion(MotionController.BlockMotion, input);
+    }
+
+    public void InputMotion(PlayerMotionPair motionPair, InputData input)
+    {
+        List<AnimatorSetting> settings = MotionData.ApplyModifiers(motionPair.motion.InputMotion(this, input, motionPair.control), new MotionData(ComplexAnimator)).AsSettings();
+        ComplexAnimator.AcceptSettings(settings);
     }
 }

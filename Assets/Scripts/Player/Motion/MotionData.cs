@@ -38,6 +38,37 @@ public struct MotionData
             this.settings = settings;
         nonDefault = true;
     }
+
+    public MotionData(ComplexAnimator animator, List<AnimatorSetting> settings = null)
+    {
+        runSpeed = animator.Anim.GetFloat("RunSpeed");
+        jumpSpeed = animator.Anim.GetFloat("JumpSpeed");
+        grounded = animator.Anim.GetBool("Grounded");
+        if (settings == null)
+            this.settings = new List<AnimatorSetting>();
+        else
+            this.settings = settings;
+        nonDefault = true;
+    }
+
+    public List<AnimatorSetting> AsSettings()
+    {
+        List<AnimatorSetting> newSettings = new List<AnimatorSetting>();
+        newSettings.Add(new AnimatorFloatSetting("RunSpeed", Mathf.Abs(runSpeed)));
+        newSettings.Add(new AnimatorFloatSetting("JumpSpeed", jumpSpeed));
+        newSettings.Add(new AnimatorBoolSetting("Grounded", grounded));
+        newSettings.AddRange(settings);
+        return newSettings;
+    }
+
+    public static MotionData ApplyModifiers(List<MotionDataModifier> modifiers, MotionData data)
+    {
+        foreach (MotionDataModifier mod in modifiers)
+        {
+            data = mod.ModifyData(data);
+        }
+        return data;
+    }
 }
 
 public interface MotionDataModifier
@@ -86,6 +117,21 @@ public struct MotionDataGroundedModifier : MotionDataModifier
     public MotionData ModifyData(MotionData data)
     {
         data.grounded = grounded;
+        return data;
+    }
+}
+
+public struct MotionDataSettingsModifier : MotionDataModifier
+{
+    public AnimatorSetting setting;
+    public MotionDataSettingsModifier(AnimatorSetting setting)
+    {
+        this.setting = setting;
+    }
+
+    public MotionData ModifyData(MotionData data)
+    {
+        data.settings.Add(setting);
         return data;
     }
 }

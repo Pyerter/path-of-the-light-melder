@@ -28,6 +28,11 @@ public class ComplexAnimator : MonoBehaviour
             setting.ApplySetting(this);
         }
     }
+
+    public bool StateNameIs(string name, int layerIndex = 0)
+    {
+        return Anim.GetCurrentAnimatorStateInfo(0).IsName(name);
+    }
 }
 
 public interface AnimatorSetting

@@ -9,12 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dd3cd40a0d1f9f4c8c5f367e6fc8978, type: 3}
-  m_Name: FullLocker
+  m_Script: {fileID: 11500000, guid: 74ac6d9dd68704541818696bc85ab3b5, type: 3}
+  m_Name: Block
   m_EditorClassIdentifier: 
-  controlLockScheme: {fileID: 11400000, guid: 090d31d32c6893c42a08dd4925ce9be9, type: 2}
-  controlLock:
-    priority: 0
-    locks:
-      mask: 24583
-      name: Composite
+  animationName: Block

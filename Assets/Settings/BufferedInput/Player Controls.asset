@@ -21,6 +21,8 @@ MonoBehaviour:
     name: Player/Fire
   - mask: 8192
     name: Player/Jump
+  - mask: 16384
+    name: Player/Block
   - mask: 8
     name: UI/Navigate
   - mask: 16

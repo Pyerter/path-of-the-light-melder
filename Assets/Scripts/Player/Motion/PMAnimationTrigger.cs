@@ -3,31 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Player Motion/Punch")]
-public class PMPunch : PlayerMotion
+[CreateAssetMenu(menuName = "Player Motion/Animation Trigger")]
+public class PMAnimationTrigger : PlayerMotion
 {
+    [SerializeField] protected string animationName = "Punch";
     protected bool activeMotion = false;
     public override bool ActiveMotion { get { return activeMotion; } }
-    protected BufferedInput.StandardControlLocker cachedLocker;
+    protected StandardControlLocker cachedLocker;
 
     public override List<MotionDataModifier> InputMotion(PlayerController controller, InputData input, BufferedInput.StandardControlLocker locker = null, MotionData motionData = default)
     {
         if (input.IsPending())
         {
+            Debug.Log("Triggered animation: " + animationName);
             activeMotion = true;
             if (locker != null)
             {
                 cachedLocker = locker;
                 controller.AddLocker(cachedLocker);
             }
+            List<MotionDataModifier> modifiers = new List<MotionDataModifier>();
+            modifiers.Add(new MotionDataSettingsModifier(new AnimatorBoolSetting(animationName, true, true)));
+            return modifiers;
         }
         return new List<MotionDataModifier>();
     }
 
     public override List<MotionDataModifier> UpdateMotion(PlayerController controller, MotionData motionData = default)
     {
-        activeMotion = false;
-        if (cachedLocker != null)
+        if (!controller.ComplexAnimator.StateNameIs(animationName))
+            activeMotion = false;
+        //controller.MotionController.Move(controller, 0);
+        if (!activeMotion && cachedLocker != null)
         {
             controller.RemoveLocker(cachedLocker);
             cachedLocker = null;
