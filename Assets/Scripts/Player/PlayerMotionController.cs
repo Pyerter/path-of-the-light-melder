@@ -41,7 +41,7 @@ public class PlayerMotionController : MonoBehaviour
     public bool Grounded { get { return grounded; } }
 
     [Header("Jumping")]
-    [SerializeField] private FloatState jumping = new FloatState(0); // threshold is fall speed threshold
+    [SerializeField] private FloatState jumping = new FloatState(0.05f); // threshold is fall speed threshold
     public float GetFallSpeed() { return rb.velocity.y; }
     public bool removeJumpLockOnGrounded = false;
 
@@ -71,6 +71,8 @@ public class PlayerMotionController : MonoBehaviour
                 Debug.LogError("Using a PlayerMotionController and there is no Rigidbody2D in parents or children! What do I latch onto?!?!?!");
         }
 
+        jumping.valueProvider = GetFallSpeed;
+
         blockMotion.Initialize();
         punchMotion.Initialize();
     }
@@ -86,23 +88,45 @@ public class PlayerMotionController : MonoBehaviour
         return grounded.TryUpdateAbove(false);
     }
 
-    public bool IsJumping()
+    public bool IsJumping(PlayerController controller = null)
     {
-        if (jumping.BelowThreshold() && grounded)
+        bool wasJumping = jumping;
+
+        if (jumping.BelowThreshold())
             jumping.Update(false);
-        return jumping;
+
+        bool nowJumping = jumping;
+        if (!nowJumping && ((wasJumping && controller != null) || (!grounded)))
+        {
+            removeJumpLockOnGrounded = true;
+            controller.AddLocker(controller.JumpLocker);
+            //Debug.Log("Added jump locker");
+        }
+        return nowJumping;
+    }
+
+    public bool EndJump(PlayerController controller)
+    {
+        //Debug.Log("Trying to cancel jump");
+        if (jumping)
+        {
+            //Debug.Log("Doing cancel!");
+            Vector2 velocity = rb.velocity;
+            velocity.y = 0;
+            rb.velocity = velocity;
+            return true;
+        }
+        return false;
     }
 
     public bool Jump(PlayerController controller)
     {
-        if (grounded && !IsJumping())
+        if (grounded && !jumping)
         {
             Vector2 velocity = rb.velocity;
             velocity.y = jumpSpeed;
             rb.velocity = velocity;
-            removeJumpLockOnGrounded = true;
-            controller.AddLocker(controller.JumpLocker);
-            Debug.Log("Added jump locker");
+            jumping.Update(true);
             return true;
         }
         return false;
@@ -191,12 +215,12 @@ public class PlayerMotionController : MonoBehaviour
 
         DragMomentum();
         IsGrounded();
-        IsJumping();
+        IsJumping(controller);
         if (grounded && !jumping && removeJumpLockOnGrounded)
         {
             controller.RemoveLocker(controller.JumpLocker);
             removeJumpLockOnGrounded = false;
-            Debug.Log("Removed jump locker");
+            //Debug.Log("Removed jump locker");
         }
 
         walkingCollider.sharedMaterial = inputMoving ? kineticMaterial : staticMaterial;

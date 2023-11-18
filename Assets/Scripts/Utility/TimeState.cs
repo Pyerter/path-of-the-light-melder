@@ -26,7 +26,7 @@ public class FloatState
 
     public virtual bool BelowThreshold()
     {
-        return valueProvider.Invoke() > threshold;
+        return valueProvider.Invoke() < threshold;
     }
 
     public virtual void Update(bool active)

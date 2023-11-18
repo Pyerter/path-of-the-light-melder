@@ -62,6 +62,9 @@ public class PlayerController : MonoBehaviour
         if (input.IsPending())
         {
             MotionController.Jump(this);
+        } else if (input.IsReleased())
+        {
+            MotionController.EndJump(this);
         }
     }
 

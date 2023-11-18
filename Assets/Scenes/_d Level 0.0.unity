@@ -2948,7 +2948,7 @@ MonoBehaviour:
     m_Bits: 192
   grounded:
     active: 0
-    threshold: 0
+    threshold: 0.1
     previous: 0
   groundCheck: {fileID: 597649430}
   checkToGroundDistance: 0.15
