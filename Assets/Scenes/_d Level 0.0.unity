@@ -2071,6 +2071,9 @@ MonoBehaviour:
   - mask: 1024
     name: UI/RightClick
   inputBufferDuration: 10
+  defaultDirectional:
+    mask: 1
+    name: Player/Move
   inputBufferDebugMessages: 0
   playerVerticalAttackThreshold: 70
 --- !u!114 &414425391

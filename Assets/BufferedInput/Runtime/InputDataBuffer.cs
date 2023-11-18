@@ -38,6 +38,12 @@ namespace BufferedInput
             return true;
         }
 
+        public void InitializeBuffers(InputControlScheme controlScheme, ActionMask defaultDirectional)
+        {
+            this.defaultDirectional = defaultDirectional;
+            InitializeBuffers(controlScheme);
+        }
+
         public void InitializeBuffers(InputControlScheme controlScheme)
         {
             actionBuffers = new List<InputPair>[ActionMask.MAX_MASKS];

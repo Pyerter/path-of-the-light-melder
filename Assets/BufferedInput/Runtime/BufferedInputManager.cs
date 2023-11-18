@@ -29,6 +29,7 @@ namespace BufferedInput
         [SerializeField][HideInInspector] Dictionary<string, Action<InputData>> inputEvents;
         [SerializeField] List<ActionMask> controlPriorityList = new List<ActionMask>();
         [SerializeField] int inputBufferDuration = 10;
+        [SerializeField] protected ActionMask defaultDirectional;
 
         [SerializeField] bool inputBufferDebugMessages = false;
         InputDataBuffer inputBuffer = new InputDataBuffer();
@@ -49,7 +50,7 @@ namespace BufferedInput
             VerifyInputEvents();
 
             inputBuffer = new InputDataBuffer();
-            inputBuffer.InitializeBuffers(inputControlScheme);
+            inputBuffer.InitializeBuffers(inputControlScheme, defaultDirectional);
         }
 
         protected void RemoveExtraActionMaps()
