@@ -9,6 +9,8 @@ public class AStarPathfinding
     public const int MOVE_DIAGONAL_COST = 14;
 
     private IComparer<PathNode> nodeCostComparer = new PathNode.PathNodeCostComparer();
+    protected System.Func<Tilemap, PathNode, bool> nodeValidator;
+    public System.Func<Tilemap, PathNode, bool> NodeValidator {  get { if (nodeValidator == null) nodeValidator = NodeValidStandable; return nodeValidator; } }
 
     protected int entityHeight;
     public int EntityHeight { get { return entityHeight; } }
@@ -17,9 +19,13 @@ public class AStarPathfinding
     protected List<PathNode> openList;
     protected Dictionary<Vector2Int, PathNode> closedList;
 
-    public AStarPathfinding(int entityHeight)
+    public AStarPathfinding(int entityHeight, System.Func<Tilemap, PathNode, bool> nodeValidator = null)
     {
         this.entityHeight = entityHeight;
+        if (nodeValidator == null)
+            this.nodeValidator = NodeValidStandable;
+        else
+            this.nodeValidator = nodeValidator;
     }
 
     public PathNode this[Vector2Int pos]
@@ -49,6 +55,11 @@ public class AStarPathfinding
     }
 
     public bool NodeValid(Tilemap tilemap, PathNode node)
+    {
+        return NodeValidator.Invoke(tilemap, node);
+    }
+
+    public bool NodeValidStandable(Tilemap tilemap, PathNode node)
     {
         return GridUtility.NodeIsStandable(tilemap, node, EntityHeight, 0);
     }
