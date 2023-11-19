@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class PathNode : MonoBehaviour
+public class PathNode
 {
     protected readonly Vector2Int position;
     public Vector2Int Position { get { return position; } }
@@ -50,11 +50,15 @@ public class PathNode : MonoBehaviour
 
     public static bool operator ==(PathNode a, PathNode b)
     {
+        if ((a is null) || (b is null))
+            return (a is null) == (b is null);
         return a.position.Equals(b.position);
     }
 
     public static bool operator !=(PathNode a, PathNode b)
     {
+        if ((a is null) || (b is null))
+            return (a is null) != (b is null);
         return !a.position.Equals(b.position);
     }
 

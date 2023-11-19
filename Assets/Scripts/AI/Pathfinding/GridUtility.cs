@@ -22,7 +22,10 @@ public class GridUtility
                 Vector2Int currentPosition = new Vector2Int(node.Position.x + i, node.Position.y + j);
                 PathNode currentNode = nodeGenerator.Invoke(currentPosition);
                 if (nodePredicate.Invoke(tilemap, currentNode))
+                {
                     nodes.Add(currentNode);
+                    //Debug.Log("Added node " + currentPosition + " to the pathfinding.");
+                }
             }
         }
 

@@ -19,7 +19,7 @@ public class AStarPathfinding
     protected List<PathNode> openList;
     protected Dictionary<Vector2Int, PathNode> closedList;
 
-    public AStarPathfinding(int entityHeight, System.Func<Tilemap, PathNode, bool> nodeValidator = null)
+    public AStarPathfinding(int entityHeight = 1, System.Func<Tilemap, PathNode, bool> nodeValidator = null)
     {
         this.entityHeight = entityHeight;
         if (nodeValidator == null)
@@ -34,7 +34,7 @@ public class AStarPathfinding
         {
             if (validNodes.TryGetValue(pos, out PathNode node))
                 return node;
-            PathNode newNode = new PathNode(pos);
+            PathNode newNode = new PathNode(pos).Initialize(); ;
             validNodes.Add(pos, newNode);
             return newNode;
         }
@@ -47,11 +47,6 @@ public class AStarPathfinding
     public PathNode GetNode(Vector2Int vec)
     {
         return this[vec];
-    }
-
-    public PathNode GetNodeInitialized(Vector2Int vec)
-    {
-        return this[vec].Initialize();
     }
 
     public bool NodeValid(Tilemap tilemap, PathNode node)
@@ -107,7 +102,7 @@ public class AStarPathfinding
             closedList.Add(currentNode.Position, currentNode);
 
             // Get the neighboring nodes (as long as they're not already searched in the closed list)
-            List<PathNode> neighbors = GridUtility.GetNearValidNode(tilemap, currentNode, GetNodeInitialized, NodeValidUnsearched, 1);
+            List<PathNode> neighbors = GridUtility.GetNearValidNode(tilemap, currentNode, GetNode, NodeValidUnsearched, 1);
             foreach (PathNode neighbor in neighbors)
             {
                 // calculate the pending path cost
@@ -135,11 +130,15 @@ public class AStarPathfinding
     {
         List<PathNode> nodes = new List<PathNode>();
         PathNode currentNode = end;
+        //Debug.Log("Building node path list");
         while (currentNode != null)
         {
-            nodes[0] = currentNode;
-            currentNode = nodes[0].ParentNode;
+            //Debug.Log("Current node: " + currentNode.Position + " and parent is " + (currentNode.HasParent ? currentNode.ParentNode.Position : "none."));
+            nodes.Add(currentNode);
+            currentNode = currentNode.ParentNode;
         }
+        nodes.Reverse();
+        //Debug.Log("List contains " + nodes.Count + " nodes.");
         return nodes;
     }
 
@@ -149,5 +148,25 @@ public class AStarPathfinding
         int straights = Mathf.Abs(distances.x - distances.y);
         int diagonals = Mathf.Min(Mathf.Abs(distances.x), Mathf.Abs(distances.y));
         return MOVE_DIAGONAL_COST * diagonals + MOVE_STRAIGHT_COST * straights;
+    }
+
+    public List<Vector2> PathToPositions(Tilemap tilemap, List<PathNode> nodes)
+    {
+        List<Vector2> positions = new List<Vector2>();
+        foreach (PathNode node in nodes)
+        {
+            Vector2 current = tilemap.GetCellCenterWorld(new Vector3Int(node.Position.x, node.Position.y, 0));
+            positions.Add(current);
+            //Debug.Log("Added position to path: " + current);
+        }
+        return positions;
+    }
+
+    public List<Vector2> FindPositionPath(Tilemap tilemap, Vector2 startF, Vector2 endF)
+    {
+        List<PathNode> path = FindPath(tilemap, startF, endF);
+        if (path == null)
+            return new List<Vector2>();
+        return PathToPositions(tilemap, path);
     }
 }
