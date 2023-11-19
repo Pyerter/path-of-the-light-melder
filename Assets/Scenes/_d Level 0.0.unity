@@ -1964,7 +1964,8 @@ GameObject:
   m_Component:
   - component: {fileID: 239024023}
   - component: {fileID: 239024022}
-  - component: {fileID: 239024021}
+  - component: {fileID: 239024025}
+  - component: {fileID: 239024024}
   m_Layer: 0
   m_Name: EnemyPathfinding
   m_TagString: Untagged
@@ -1972,22 +1973,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &239024021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 239024020}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 213a1e292185e75458df8e103c8edd03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tilemap: {fileID: 46025787}
-  target: {fileID: 414425388}
-  rb: {fileID: 0}
-  speed: 1
 --- !u!50 &239024022
 Rigidbody2D:
   serializedVersion: 4
@@ -2031,6 +2016,35 @@ Transform:
   - {fileID: 175700971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &239024024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 239024020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9dcb2a704e86b648b33c139cbcdf043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathManager: {fileID: 239024025}
+  rb: {fileID: 239024022}
+  speed: 2
+  distanceThresholdToPoint: 0.05
+--- !u!114 &239024025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 239024020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8988a17b5fb5a949aa50d83f0b29ab2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
 --- !u!1 &414425386
 GameObject:
   m_ObjectHideFlags: 0
@@ -2264,6 +2278,7 @@ MonoBehaviour:
   inputManager: {fileID: 414425390}
   motionController: {fileID: 708014118}
   complexAnimator: {fileID: 1241440338}
+  pathfinderTarget: {fileID: 597649430}
   runLocker: {fileID: 11400000, guid: 7f49d8552136d7e45807277d46d5cbc7, type: 2}
   jumpLocker: {fileID: 11400000, guid: a831b5527ec4eb748a61f121f8932712, type: 2}
   fullLocker: {fileID: 11400000, guid: bd3923f33c438bb4484c6043e82ca132, type: 2}
@@ -3819,6 +3834,51 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1611833239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1611833241}
+  - component: {fileID: 1611833240}
+  m_Layer: 0
+  m_Name: PathfinderManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1611833240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611833239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0a1587b756647c458961a02d9cb2d03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundTilemap: {fileID: 46025787}
+--- !u!4 &1611833241
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611833239}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.100812, y: -2.4309406, z: 0.019998627}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2117150627
 GameObject:
   m_ObjectHideFlags: 0
@@ -3914,3 +3974,4 @@ SceneRoots:
   - {fileID: 1234297817}
   - {fileID: 414862912}
   - {fileID: 239024023}
+  - {fileID: 1611833241}

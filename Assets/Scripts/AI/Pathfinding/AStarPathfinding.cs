@@ -12,6 +12,9 @@ public class AStarPathfinding
     protected System.Func<Tilemap, PathNode, bool> nodeValidator;
     public System.Func<Tilemap, PathNode, bool> NodeValidator {  get { if (nodeValidator == null) nodeValidator = NodeValidStandable; return nodeValidator; } }
 
+    protected Tilemap tilemap;
+    public Tilemap Tilemap { get { return tilemap; } }
+
     protected int entityHeight;
     public int EntityHeight { get { return entityHeight; } }
 
@@ -19,8 +22,9 @@ public class AStarPathfinding
     protected List<PathNode> openList;
     protected Dictionary<Vector2Int, PathNode> closedList;
 
-    public AStarPathfinding(int entityHeight = 1, System.Func<Tilemap, PathNode, bool> nodeValidator = null)
+    public AStarPathfinding(Tilemap tilemap, int entityHeight = 1, System.Func<Tilemap, PathNode, bool> nodeValidator = null)
     {
+        this.tilemap = tilemap;
         this.entityHeight = entityHeight;
         if (nodeValidator == null)
             this.nodeValidator = NodeValidStandable;
@@ -168,5 +172,15 @@ public class AStarPathfinding
         if (path == null)
             return new List<Vector2>();
         return PathToPositions(tilemap, path);
+    }
+
+    public List<Vector2> FindPositionPath(Vector2 startF, Vector2 endF)
+    {
+        return FindPositionPath(tilemap, startF, endF);
+    }
+
+    public void ClearCachedNodes()
+    {
+        validNodes.Clear();
     }
 }

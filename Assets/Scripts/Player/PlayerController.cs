@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] protected ComplexAnimator complexAnimator;
     public ComplexAnimator ComplexAnimator { get { return complexAnimator; } }
 
+    [SerializeField] protected Transform pathfinderTarget;
+    public Transform PathfinderTarget { get { return pathfinderTarget; } }
+
     [Header("Control Lockers")]
     [SerializeField] protected StandardControlLocker runLocker;
     public StandardControlLocker RunLocker { get { return runLocker; } }
