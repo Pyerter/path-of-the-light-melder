@@ -15,21 +15,63 @@ public class PathNode
     public int HCost { get { return hCost; } set { hCost = value; } }
     public int FCost { get { return fCost; } set { fCost = value; } }
 
+    protected bool priorityFlag = false;
+    public bool PriorityFlag { get { return priorityFlag; } set { priorityFlag = value; } }
+
     protected PathNode parentNode;
     public PathNode ParentNode { get { return parentNode; } }
     public bool HasParent { get { return parentNode != null; } }
+
+    protected bool initialized = false;
+    public bool Initialized { get { return initialized; } }
 
     public PathNode(Vector2Int position)
     {
         this.position = position;
     }
 
+    public PathNode(PathNode target)
+    {
+        this.position = target.position;
+        this.gCost = target.gCost;
+        this.hCost = target.hCost;
+        this.fCost = target.fCost;
+        this.parentNode = target.parentNode;
+    }
+
+    public PathNode Reinitialize(int gCost = int.MaxValue)
+    {
+        initialized = false;
+        return Initialize(gCost);
+    }
+
     public PathNode Initialize(int gCost = int.MaxValue)
     {
+        if (initialized)
+            return this;
+
         GCost = gCost;
         CalculateFCost();
         parentNode = null;
+        initialized = true;
         return this;
+    }
+
+    public void PriorityInitialize(int hCost)
+    {
+        PriorityInitialize(GCost, hCost);
+    }
+
+    public void PriorityInitialize(int gCost, int hCost)
+    {
+        GCost = gCost;
+        HCost = hCost;
+        CalculateFCost();
+    }
+
+    public void Uninitialize()
+    {
+        initialized = false;
     }
 
     public void CalculateFCost()
@@ -76,6 +118,16 @@ public class PathNode
                 return false;
         }
         return true;
+    }
+
+    public IEnumerable<PathNode> TraceParent()
+    {
+        PathNode currentNode = this;
+        while (currentNode != null)
+        {
+            yield return currentNode;
+            currentNode = currentNode.ParentNode;
+        }
     }
 
     public class PathNodeCostComparer : IComparer<PathNode>

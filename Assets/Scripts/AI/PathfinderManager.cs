@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 public class PathfinderManager : MonoBehaviour
 {
     protected static PathfinderManager instance;
-    public static PathfinderManager Instance { get { if (instance == null) FindObjectOfType<PathfinderManager>(); return instance; } }
+    public static PathfinderManager Instance { get { if (instance == null) instance = FindObjectOfType<PathfinderManager>(); return instance; } }
 
     [SerializeField] Tilemap groundTilemap;
     public Tilemap GroundTiles { get { return groundTilemap; } }

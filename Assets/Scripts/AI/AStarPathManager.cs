@@ -11,6 +11,22 @@ public class AStarPathManager : MonoBehaviour
     protected Vector2 previousPathUpdate;
     protected bool queueTargetRecalculation = true;
 
+    protected bool usePreviousPathAsPriority = false;
+    public bool UsePreviousPathAsPriority {
+        get 
+        {
+            if (pathfinder != null)
+                usePreviousPathAsPriority = pathfinder.UsePreviousPathAsPriority;
+            return usePreviousPathAsPriority;
+        }
+        set 
+        {
+            usePreviousPathAsPriority = value;
+            if (pathfinder != null)
+                pathfinder.UsePreviousPathAsPriority = value;
+        }
+    }
+
     protected PathInstance currentPath;
     public PathInstance CurrentPath { get { return currentPath; } }
 
@@ -19,6 +35,7 @@ public class AStarPathManager : MonoBehaviour
         if (target == null)
             target = PathfinderManager.Instance.PlayerTarget;
         pathfinder = new AStarPathfinding(PathfinderManager.Instance.GroundTiles);
+        pathfinder.UsePreviousPathAsPriority = usePreviousPathAsPriority;
     }
 
     private void Start()
@@ -56,8 +73,8 @@ public class AStarPathManager : MonoBehaviour
 
     public void CalculatePathInstance()
     {
-        Debug.Log("Calculating new path instance.");
-        pathfinder.ClearCachedNodes();
+        Debug.Log("Calculating new path instance :).");
+        // pathfinder.ClearCachedNodes();
         Vector2 start = new Vector2(transform.position.x, transform.position.y);
         Vector2 end = new Vector2(target.position.x, target.position.y);
         Debug.Log("Start is " + start + " and end is " + end);

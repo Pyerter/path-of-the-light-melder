@@ -57,4 +57,16 @@ public class GridUtility
         list.RemoveAt(index);
         return true;
     }
+
+    public static bool TryGetIndexInSortedList<T>(List<T> list, T element, IComparer<T> comparer, out int index)
+    {
+        index = list.BinarySearch(element, comparer);
+        return index >= 0;
+    }
+
+    public static bool SortedListContains<T>(List<T> list, T element, IComparer<T> comparer)
+    {
+        int index = list.BinarySearch(element, comparer);
+        return index >= 0;
+    }
 }
