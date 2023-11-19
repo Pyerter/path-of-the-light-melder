@@ -5,23 +5,25 @@ using UnityEngine.Tilemaps;
 
 public class GridUtility
 {
-    public static List<PathNode> GetNearValidNode(Tilemap tilemap, PathNode node, System.Func<Vector2Int, PathNode> nodeGenerator, System.Func<Tilemap, PathNode, bool> nodePredicate = null, int distance = 1)
+    public static List<PathNode> GetNearValidNode(Tilemap tilemap, PathNode node, System.Func<Vector2Int, PathNode> nodeGenerator, System.Func<Tilemap, PathNode, PathNode, bool> nodePredicate = null, int distance = 1)
     {
         if (distance < 1)
             return new List<PathNode>();
         if (nodeGenerator == null)
             nodeGenerator = (vec) => new PathNode(vec);
         if (nodePredicate == null)
-            nodePredicate = (tilemap, node) => NodeIsStandable(tilemap, node, 1, 0);
+            nodePredicate = (tilemap, node, previous) => NodeIsStandable(tilemap, node, 1, 0);
 
         List<PathNode> nodes = new List<PathNode>();
         for (int i = -distance; i <= distance; i++)
         {
             for (int j = -distance; j <= distance; j++)
             {
+                if (i == 0 && j == 0)
+                    continue;
                 Vector2Int currentPosition = new Vector2Int(node.Position.x + i, node.Position.y + j);
                 PathNode currentNode = nodeGenerator.Invoke(currentPosition);
-                if (nodePredicate.Invoke(tilemap, currentNode))
+                if (nodePredicate.Invoke(tilemap, currentNode, node))
                 {
                     nodes.Add(currentNode);
                     //Debug.Log("Added node " + currentPosition + " to the pathfinding.");

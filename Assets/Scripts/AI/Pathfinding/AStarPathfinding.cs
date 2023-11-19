@@ -9,8 +9,8 @@ public class AStarPathfinding
     public const int MOVE_DIAGONAL_COST = 14;
 
     private IComparer<PathNode> nodeCostComparer = new PathNode.PathNodeCostComparer();
-    protected System.Func<Tilemap, PathNode, bool> nodeValidator;
-    public System.Func<Tilemap, PathNode, bool> NodeValidator {  get { if (nodeValidator == null) nodeValidator = NodeValidStandable; return nodeValidator; } }
+    protected System.Func<Tilemap, PathNode, PathNode, bool> nodeValidator;
+    public System.Func<Tilemap, PathNode, PathNode, bool> NodeValidator {  get { if (nodeValidator == null) nodeValidator = NodeValidStandable; return nodeValidator; } }
 
     protected Tilemap tilemap;
     public Tilemap Tilemap { get { return tilemap; } }
@@ -22,7 +22,7 @@ public class AStarPathfinding
     protected List<PathNode> openList;
     protected Dictionary<Vector2Int, PathNode> closedList;
 
-    public AStarPathfinding(Tilemap tilemap, int entityHeight = 1, System.Func<Tilemap, PathNode, bool> nodeValidator = null)
+    public AStarPathfinding(Tilemap tilemap, int entityHeight = 1, System.Func<Tilemap, PathNode, PathNode, bool> nodeValidator = null)
     {
         this.tilemap = tilemap;
         this.entityHeight = entityHeight;
@@ -53,19 +53,19 @@ public class AStarPathfinding
         return this[vec];
     }
 
-    public bool NodeValid(Tilemap tilemap, PathNode node)
+    public bool NodeValid(Tilemap tilemap, PathNode node, PathNode previous)
     {
-        return NodeValidator.Invoke(tilemap, node);
+        return NodeValidator.Invoke(tilemap, node, previous);
     }
 
-    public bool NodeValidStandable(Tilemap tilemap, PathNode node)
+    public bool NodeValidStandable(Tilemap tilemap, PathNode node, PathNode previous)
     {
         return GridUtility.NodeIsStandable(tilemap, node, EntityHeight, 0);
     }
 
-    public bool NodeValidUnsearched(Tilemap tilemap, PathNode node)
+    public bool NodeValidUnsearched(Tilemap tilemap, PathNode node, PathNode previous)
     {
-        return NodeValid(tilemap, node) && !closedList.ContainsKey(node.Position);
+        return NodeValid(tilemap, node, previous) && !closedList.ContainsKey(node.Position);
     }
 
     public List<PathNode> FindPath(Tilemap tilemap, Vector2 startF, Vector2 endF)
@@ -103,7 +103,7 @@ public class AStarPathfinding
 
             // remove the grabbed node and add it the closed list (we know it's not the target and it has the best FCost it can now)
             openList.RemoveAt(0);
-            closedList.Add(currentNode.Position, currentNode);
+            closedList.TryAdd(currentNode.Position, currentNode);
 
             // Get the neighboring nodes (as long as they're not already searched in the closed list)
             List<PathNode> neighbors = GridUtility.GetNearValidNode(tilemap, currentNode, GetNode, NodeValidUnsearched, 1);
