@@ -274,6 +274,17 @@
                 },
                 {
                     "name": "",
+                    "id": "976aa523-a9e2-4389-a7a3-180dbf680872",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "369fb590-b873-4a1b-89a1-dd187e1f9bbb",
                     "path": "<Keyboard>/space",
                     "interactions": "",

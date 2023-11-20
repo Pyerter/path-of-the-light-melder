@@ -1965,7 +1965,7 @@ GameObject:
   - component: {fileID: 239024023}
   - component: {fileID: 239024022}
   - component: {fileID: 239024025}
-  - component: {fileID: 239024024}
+  - component: {fileID: 239024026}
   m_Layer: 0
   m_Name: EnemyPathfinding
   m_TagString: Untagged
@@ -2016,22 +2016,6 @@ Transform:
   - {fileID: 175700971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &239024024
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 239024020}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9dcb2a704e86b648b33c139cbcdf043, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pathManager: {fileID: 239024025}
-  rb: {fileID: 239024022}
-  speed: 2
-  distanceThresholdToPoint: 0.05
 --- !u!114 &239024025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2045,6 +2029,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+--- !u!114 &239024026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 239024020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f592ab22d084cab4298a78a86b131db3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathManager: {fileID: 239024025}
+  rb: {fileID: 239024022}
+  speed: 2
+  jumpSpeed: 4
+  gravityScale: 3
+  distanceThresholdToPoint: 0.05
 --- !u!1 &414425386
 GameObject:
   m_ObjectHideFlags: 0
