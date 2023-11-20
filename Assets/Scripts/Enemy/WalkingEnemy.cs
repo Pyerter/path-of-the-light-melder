@@ -35,7 +35,7 @@ public class WalkingEnemy : MonoBehaviour
 
     public bool PointIsLevelAndFurther(Vector2 currentPosition, Vector2 currentTarget, Vector2 nextTarget)
     {
-        return currentTarget.y >= nextTarget.y;
+        return nextTarget.y <= currentTarget.y || TargetIsEquivalentLevel(nextTarget, currentPosition);
     }
 
     public void RunToPosition()
@@ -68,6 +68,18 @@ public class WalkingEnemy : MonoBehaviour
         bool targetAboveLevel = PathfinderManager.Instance.GetGridPosition(targetLocation).y > PathfinderManager.Instance.GetGridPosition(GroundLevelTransform.position).y;
         bool notJumping = RB.velocity.y <= 0.05f;
         return targetAboveLevel && notJumping;
+    }
+
+    public bool TargetIsEquivalentLevel(Vector2 target, Vector2 current)
+    {
+        Vector2Int targetPosition = PathfinderManager.Instance.GetCellPosition(target);
+        Vector2Int currentPosition = PathfinderManager.Instance.GetCellPosition(current);
+        return targetPosition.y == currentPosition.y;
+    }
+
+    public bool TargetIsAboveLevel(Vector2 target)
+    {
+        return PathfinderManager.Instance.GetGridPosition(target).y > PathfinderManager.Instance.GetGridPosition(GroundLevelTransform.position).y;
     }
 
     public void CheckFlip()

@@ -1843,7 +1843,7 @@ TilemapCollider2D:
   m_GameObject: {fileID: 46025784}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 832fe002a10c07c4bb18b2d76bacfb34, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1966,7 +1966,7 @@ GameObject:
   - component: {fileID: 239024022}
   - component: {fileID: 239024025}
   - component: {fileID: 239024026}
-  - component: {fileID: 239024027}
+  - component: {fileID: 239024028}
   m_Layer: 7
   m_Name: EnemyPathfinding
   m_TagString: Untagged
@@ -2000,7 +2000,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!4 &239024023
 Transform:
   m_ObjectHideFlags: 0
@@ -2047,11 +2047,11 @@ MonoBehaviour:
   rb: {fileID: 239024022}
   groundLevelTransform: {fileID: 417954510}
   speed: 3
-  jumpSpeed: 8.5
+  jumpSpeed: 9.5
   gravityScale: 3
-  distanceThresholdToPoint: 0.05
---- !u!61 &239024027
-BoxCollider2D:
+  distanceThresholdToPoint: 0.1
+--- !u!58 &239024028
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2083,18 +2083,8 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_Radius: 0.45
 --- !u!1 &414425386
 GameObject:
   m_ObjectHideFlags: 0

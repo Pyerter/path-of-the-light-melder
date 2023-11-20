@@ -16,6 +16,8 @@ public class AStarPathfinding
     private IComparer<PathNode> nodeCostComparer = new PathNode.PathNodeCostComparer();
     protected System.Func<Tilemap, PathNode, PathNode, bool> nodeValidator;
     public System.Func<Tilemap, PathNode, PathNode, bool> NodeValidator {  get { if (nodeValidator == null) nodeValidator = NodeValidStandable; return nodeValidator; } }
+    protected System.Func<Tilemap, Vector2Int, Vector2Int> initialNodeVerifier;
+    public System.Func<Tilemap, Vector2Int, Vector2Int> InitialNodeVerifier { get { if (initialNodeVerifier == null) initialNodeVerifier = (t, p) => p; return initialNodeVerifier; } }
 
     protected Tilemap tilemap;
     public Tilemap Tilemap { get { return tilemap; } }
@@ -32,7 +34,9 @@ public class AStarPathfinding
     protected bool usePreviousPathAsPriority = false; // TODO: Fix the encapsulated code to work properly, it currently breaks if this is true
     public bool UsePreviousPathAsPriority { get { return usePreviousPathAsPriority; } set { usePreviousPathAsPriority = value; } }
 
-    public AStarPathfinding(Tilemap tilemap, int entityHeight = 1, System.Func<Tilemap, PathNode, PathNode, bool> nodeValidator = null)
+    public AStarPathfinding(Tilemap tilemap, int entityHeight = 1, 
+        System.Func<Tilemap, PathNode, PathNode, bool> nodeValidator = null,
+        System.Func<Tilemap, Vector2Int, Vector2Int> initialNodeVerifier = null)
     {
         this.tilemap = tilemap;
         this.entityHeight = entityHeight;
@@ -40,6 +44,10 @@ public class AStarPathfinding
             this.nodeValidator = NodeValidStandable;
         else
             this.nodeValidator = nodeValidator;
+        if (initialNodeVerifier == null)
+            this.initialNodeVerifier = (t, p) => p;
+        else
+            this.initialNodeVerifier = initialNodeVerifier;
     }
 
     public PathNode this[Vector2Int pos]
@@ -94,7 +102,7 @@ public class AStarPathfinding
 
         // Initialize starting nodes
         // start node MUST be reinitialized so that we can validate path from previous calculations
-        PathNode startNode = this[start].Reinitialize(0); 
+        PathNode startNode = this[InitialNodeVerifier.Invoke(tilemap, start)].Reinitialize(0);
         PathNode endNode = this[end].Initialize();
 
         // Make calculations for the first node

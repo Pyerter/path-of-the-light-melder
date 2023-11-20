@@ -49,4 +49,37 @@ public class PathfinderManager : MonoBehaviour
         cell.y += 0.5f;
         return cell;
     }
+
+    public Vector2Int GetCellPosition(Vector3 pos)
+    {
+        Vector3Int cell = GroundTiles.WorldToCell(pos);
+        return new Vector2Int(cell.x, cell.y);
+    }
+
+    public static Vector2 GetPlayerTargetCellPosition(Tilemap tilemap, Vector2 pos)
+    {
+        Vector3Int end3 = tilemap.WorldToCell(pos);
+        Vector2Int end = new Vector2Int(end3.x, end3.y);
+        end = GetNodeBelow(tilemap, end);
+        end3 = new Vector3Int(end.x, end.y, 0);
+        return tilemap.GetCellCenterWorld(end3);
+    }
+
+    public static Vector2Int GetNodeBelow(Tilemap tilemap, Vector2Int pos)
+    {
+        Vector3Int previousSafe = new Vector3Int(pos.x, pos.y, 0);
+        int maxSearchBelow = 10;
+        if (tilemap.HasTile(previousSafe))
+            return pos;
+        for (int i = 0; i >= -maxSearchBelow; i--)
+        {
+            Vector3Int current = previousSafe + Vector3Int.down;
+            if (!tilemap.HasTile(previousSafe) && tilemap.HasTile(current))
+            {
+                return new Vector2Int(previousSafe.x, previousSafe.y);
+            }
+            previousSafe = current;
+        }
+        return pos;
+    }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class AStarPathManager : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class AStarPathManager : MonoBehaviour
     protected Vector2 previousPathUpdate;
     protected bool queueTargetRecalculation = true;
 
-    protected bool usePreviousPathAsPriority = false;
+    protected bool usePreviousPathAsPriority = true;
     public bool UsePreviousPathAsPriority {
         get 
         {
@@ -34,7 +35,7 @@ public class AStarPathManager : MonoBehaviour
     {
         if (target == null)
             target = PathfinderManager.Instance.PlayerTarget;
-        pathfinder = new AStarPathfinding(PathfinderManager.Instance.GroundTiles);
+        pathfinder = new AStarPathfinding(PathfinderManager.Instance.GroundTiles, 1, null, PathfinderManager.GetNodeBelow);
         pathfinder.UsePreviousPathAsPriority = usePreviousPathAsPriority;
     }
 
@@ -76,7 +77,8 @@ public class AStarPathManager : MonoBehaviour
         Debug.Log("Calculating new path instance :).");
         // pathfinder.ClearCachedNodes();
         Vector2 start = new Vector2(transform.position.x, transform.position.y);
-        Vector2 end = new Vector2(target.position.x, target.position.y);
+        //Vector2 end = new Vector2(target.position.x, target.position.y);
+        Vector2 end = PathfinderManager.GetPlayerTargetCellPosition(pathfinder.Tilemap, target.position);
         Debug.Log("Start is " + start + " and end is " + end);
         PathInstance inst = new PathInstance(pathfinder.FindPositionPath(start, end));
         Debug.Log("New calculation contains " + inst.positions.Count + " positions.");

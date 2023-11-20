@@ -16,11 +16,16 @@ public class AStarPathManagerEditor : Editor
 
         AStarPathManager myTarget = (AStarPathManager)target;
 
-        experimentalFoldout = EditorGUILayout.Foldout(experimentalFoldout, "Experimental Options");
+        experimentalFoldout = EditorGUILayout.Foldout(experimentalFoldout, "Advanced Options");
         if (experimentalFoldout)
         {
             EditorGUI.indentLevel++;
-            myTarget.UsePreviousPathAsPriority = EditorGUILayout.Toggle("Use Informed A*: ", myTarget.UsePreviousPathAsPriority);
+            bool pathAsPriority = EditorGUILayout.Toggle("Use Informed A*: ", myTarget.UsePreviousPathAsPriority);
+            if (pathAsPriority != myTarget.UsePreviousPathAsPriority)
+            {
+                myTarget.UsePreviousPathAsPriority = pathAsPriority;
+                EditorUtility.SetDirty(myTarget);
+            }
             EditorGUI.indentLevel--;
         }
 
