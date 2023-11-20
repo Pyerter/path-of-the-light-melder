@@ -73,7 +73,7 @@ public class AStarPathfinding
         return GridUtility.NodeIsStandable(tilemap, node, EntityHeight, 0);
     }
 
-    public bool NodeValidUnsearched(Tilemap tilemap, PathNode node, PathNode previous)
+    public bool NodeValidUnsearched(Tilemap tilemap, PathNode node, PathNode previous, Dictionary<Vector2Int, PathNode> closedList)
     {
         return NodeValid(tilemap, node, previous) && !closedList.ContainsKey(node.Position);
     }
@@ -86,10 +86,30 @@ public class AStarPathfinding
         Vector2Int start = new Vector2Int(start3.x, start3.y);
         Vector2Int end = new Vector2Int(end3.x, end3.y);
 
+        // Verify that the openList and closedList variables are set
+        if (openList == null)
+            openList = new List<PathNode>();
+        if (closedList == null)
+            closedList = new Dictionary<Vector2Int, PathNode>();
+
         // Initialize starting nodes
         // start node MUST be reinitialized so that we can validate path from previous calculations
         PathNode startNode = this[start].Reinitialize(0); 
         PathNode endNode = this[end].Initialize();
+
+        // Make calculations for the first node
+        startNode.HCost = CalculateDistanceCost(startNode, endNode);
+        startNode.CalculateFCost();
+        GridUtility.InsertIntoSortedList(openList, startNode, nodeCostComparer);
+
+        List<PathNode> validationInputList = new List<PathNode> { startNode };
+
+        if (!usePreviousPathAsPriority)
+        {
+            ClearCachedNodes();
+            openList = validationInputList;
+            return FindPath(tilemap, startNode, endNode, openList, closedList, false);
+        }
 
         // Mark nodes as stale or uninitialized when necessary
         PrepareForNewTarget(startNode, endNode);
@@ -98,7 +118,7 @@ public class AStarPathfinding
         List<PathNode> cachedOpenList = openList;
 
         // validation iteration of find path: open list only contains start node, it doesn't updated nodes which already have it as a parent
-        List<PathNode> validatedPath = FindPath(tilemap, startNode, endNode, new List<PathNode>(), new Dictionary<Vector2Int, PathNode>(), 
+        List<PathNode> validatedPath = FindPath(tilemap, startNode, endNode, validationInputList, new Dictionary<Vector2Int, PathNode>(), 
             out List<PathNode> validatedOpenList, out Dictionary<Vector2Int, PathNode> validatedClosedList, true);
 
         // Create a new open list excluding nodes we've already searched:
@@ -148,7 +168,7 @@ public class AStarPathfinding
     public List<PathNode> FindPath(Tilemap tilemap, PathNode startNode, PathNode endNode,
         List<PathNode> openList, Dictionary<Vector2Int, PathNode> closedList, bool avoidPrecalculatedNodes)
     {
-        return FindPath(tilemap, startNode,endNode, openList, closedList, out List<PathNode> outOpenList, out Dictionary<Vector2Int, PathNode> outClosedList, avoidPrecalculatedNodes);
+        return FindPath(tilemap, startNode, endNode, openList, closedList, out List<PathNode> outOpenList, out Dictionary<Vector2Int, PathNode> outClosedList, avoidPrecalculatedNodes);
     }
 
     public List<PathNode> FindPath(Tilemap tilemap, PathNode startNode, PathNode endNode, 
@@ -156,21 +176,10 @@ public class AStarPathfinding
         out List<PathNode> returnedOpenList, out Dictionary<Vector2Int, PathNode> returnedClosedList,
         bool avoidPrecalculatedNodes)
     {
-        if (openList == null)
-            openList = new List<PathNode>();
-        if (closedList == null)
-            closedList = new Dictionary<Vector2Int, PathNode>();
-
         returnedOpenList = openList;
         returnedClosedList = closedList;
 
-        // If the closed and open lists do not contain the start node, add the start node
-        if (!closedList.ContainsKey(startNode.Position) && !GridUtility.SortedListContains(openList, startNode, nodeCostComparer))
-        {
-            startNode.HCost = CalculateDistanceCost(startNode, endNode);
-            startNode.CalculateFCost();
-            GridUtility.InsertIntoSortedList(openList, startNode, nodeCostComparer);
-        }
+        System.Func<Tilemap, PathNode, PathNode, bool> nodeValidationPredicate = (t, p1, p2) => NodeValidUnsearched(t, p1, p2, closedList);
 
         // iterate while we still have nodes in the list
         while (openList.Count > 0)
@@ -191,7 +200,7 @@ public class AStarPathfinding
             closedList.TryAdd(currentNode.Position, currentNode);
 
             // Get the neighboring nodes (as long as they're not already searched in the closed list)
-            List<PathNode> neighbors = GridUtility.GetNearValidNode(tilemap, currentNode, GetNode, NodeValidUnsearched, 1);
+            List<PathNode> neighbors = GridUtility.GetNearValidNode(tilemap, currentNode, GetNode, nodeValidationPredicate, 1);
             foreach (PathNode neighbor in neighbors)
             {
                 // Check if current node is already a neighbor of target node
@@ -357,5 +366,11 @@ public class AStarPathfinding
     public void ClearCachedNodes()
     {
         validNodes.Clear();
+        cachedStartNode = null;
+        cachedEndNode = null;
+        if (openList.Count > 0)
+            openList = new List<PathNode>();
+        if (closedList.Count > 0)
+            closedList = new Dictionary<Vector2Int, PathNode>();
     }
 }
