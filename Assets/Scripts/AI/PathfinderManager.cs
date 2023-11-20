@@ -35,4 +35,18 @@ public class PathfinderManager : MonoBehaviour
             Debug.LogWarning("Instance is already set, deleting new pathfinder manager...");
         }
     }
+
+    public Vector2 GetCellSize()
+    {
+        Vector2 cellSize = GroundTiles.cellSize;
+        return new Vector2(cellSize.x, cellSize.y);
+    }
+
+    public Vector2 GetGridPosition(Vector3 pos)
+    {
+        Vector3 cell = GroundTiles.WorldToCell(pos);
+        cell.x += 0.5f;
+        cell.y += 0.5f;
+        return cell;
+    }
 }

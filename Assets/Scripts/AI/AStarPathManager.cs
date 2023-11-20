@@ -105,10 +105,10 @@ public class AStarPathManager : MonoBehaviour
     }
 
     // returns true if there is a remaining target location in the path
-    public bool GetPathUpdate(out Vector2 target, float threshold = 0.01f)
+    public bool GetPathUpdate(out Vector2 target, float threshold = 0.01f, System.Func<Vector2, Vector2, Vector2, bool> skipNextPositionPredicate = null)
     {
         Vector2 current = new Vector2(transform.position.x, transform.position.y);
-        bool hasPath = currentPath.TryTargetAndPosition(current, out target, threshold);
+        bool hasPath = currentPath.TryTargetAndPosition(current, out target, threshold, skipNextPositionPredicate);
         if (!hasPath)
             target = current;
         CheckShouldRecalculateTarget();
@@ -149,11 +149,30 @@ public class AStarPathManager : MonoBehaviour
             return true;
         }
 
-        public bool CheckShouldSkipCurrentTarget(Vector2 current)
+        public bool TryGetTarget(out Vector2 target, int offsetFromCurrent = 0)
         {
+            if (positions == null || currentIndex + offsetFromCurrent >= positions.Count)
+            {
+                target = Vector2.zero;
+                return false;
+            }
+            target = positions[currentIndex + offsetFromCurrent];
+            return true;
+        }
+
+        public bool NextTargetIsCloser(Vector2 currentPosition, Vector2 currentTarget, Vector2 nextTarget)
+        {
+            return Vector2.Distance(currentPosition, nextTarget) > Vector2.Distance(nextTarget, currentPosition);
+        }
+
+        public bool CheckShouldSkipCurrentTarget(Vector2 current, System.Func<Vector2, Vector2, Vector2, bool> skipNextPositionPredicate = null)
+        {
+            if (skipNextPositionPredicate == null)
+                skipNextPositionPredicate = NextTargetIsCloser;
+
             if (TryGetCurrentTarget(out Vector2 target) && TryGetNextTarget(out Vector2 nextTarget))
             {
-                if (Vector2.Distance(target, nextTarget) > Vector2.Distance(nextTarget, current))
+                if (skipNextPositionPredicate.Invoke(current, target, nextTarget))
                 {
                     currentIndex++;
                     return true;
@@ -174,10 +193,10 @@ public class AStarPathManager : MonoBehaviour
             return false;
         }
 
-        public bool TryTargetAndPosition(Vector2 current, out Vector2 target, float threshold = 0.01f)
+        public bool TryTargetAndPosition(Vector2 current, out Vector2 target, float threshold = 0.01f, System.Func<Vector2, Vector2, Vector2, bool> skipNextPositionPredicate = null)
         {
             CheckPositionEquivalence(current, threshold);
-            CheckShouldSkipCurrentTarget(current);
+            CheckShouldSkipCurrentTarget(current, skipNextPositionPredicate);
             bool hasTarget = TryGetCurrentTarget(out target);
             return hasTarget;
         }

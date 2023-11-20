@@ -11,6 +11,10 @@ public class WalkingEnemy : MonoBehaviour
     [SerializeField] protected Rigidbody2D rb;
     public Rigidbody2D RB { get { if (rb == null) rb = GetComponent<Rigidbody2D>(); return rb; } }
 
+    [SerializeField] protected Transform groundLevelTransform;
+    public Transform GroundLevelTransform { get { return groundLevelTransform; } }
+    public Vector2 GroundLevelPosition { get { return new Vector2(groundLevelTransform.position.x, groundLevelTransform.position.y); } }
+
     [SerializeField] protected float speed = 2;
     public float Speed { get { return speed; } }
 
@@ -29,13 +33,18 @@ public class WalkingEnemy : MonoBehaviour
         RB.AddForce(gravity, ForceMode2D.Force);
     }
 
+    public bool PointIsLevelAndFurther(Vector2 currentPosition, Vector2 currentTarget, Vector2 nextTarget)
+    {
+        return currentTarget.y >= nextTarget.y;
+    }
+
     public void RunToPosition()
     {
-        Vector2 current = new Vector2(transform.position.x, transform.position.y);
-        if (PathManager.GetPathUpdate(out Vector2 target, distanceThresholdToPoint))
+        Vector2 current = GroundLevelPosition;
+        if (PathManager.GetPathUpdate(out Vector2 target, distanceThresholdToPoint, PointIsLevelAndFurther))
         {
             Vector2 velocity = target - current;
-            if (velocity.y > 0)
+            if (ShouldJump(target))
             {
                 velocity.y = jumpSpeed;
             } else
@@ -52,6 +61,13 @@ public class WalkingEnemy : MonoBehaviour
             RB.velocity = Vector2.zero;
             //Debug.Log("No path left.");
         }
+    }
+
+    public bool ShouldJump(Vector2 targetLocation)
+    {
+        bool targetAboveLevel = PathfinderManager.Instance.GetGridPosition(targetLocation).y > PathfinderManager.Instance.GetGridPosition(GroundLevelTransform.position).y;
+        bool notJumping = RB.velocity.y <= 0.05f;
+        return targetAboveLevel && notJumping;
     }
 
     public void CheckFlip()
