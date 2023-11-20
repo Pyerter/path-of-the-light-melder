@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -17,6 +18,9 @@ public class PathNode
 
     protected bool priorityFlag = false;
     public bool PriorityFlag { get { return priorityFlag; } set { priorityFlag = value; } }
+
+    protected bool staleFlag = false;
+    public bool StaleFlag { get { return staleFlag; } set { staleFlag = value; } }
 
     protected PathNode parentNode;
     public PathNode ParentNode { get { return parentNode; } }
@@ -54,6 +58,7 @@ public class PathNode
         CalculateFCost();
         parentNode = null;
         initialized = true;
+        StaleFlag = false;
         return this;
     }
 
@@ -83,6 +88,7 @@ public class PathNode
     {
         this.parentNode = parent;
         GCost = gCost;
+        staleFlag = false;
     }
 
     public static Vector2Int operator -(PathNode a, PathNode b)
@@ -134,7 +140,16 @@ public class PathNode
     {
         int IComparer<PathNode>.Compare(PathNode a, PathNode b)
         {
-            return a.FCost - b.FCost;
+            int costDiff = a.FCost - b.FCost;
+            if (costDiff != 0)
+                return costDiff;
+
+            int xDiff = a.position.x - b.position.x;
+            if (xDiff != 0)
+                return xDiff;
+
+            int yDiff = a.position.y - b.position.y;
+            return yDiff;
         }
     }
 }

@@ -2,8 +2,11 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Versioning;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class AStarPathfinding
 {
@@ -23,6 +26,7 @@ public class AStarPathfinding
     protected Dictionary<Vector2Int, PathNode> validNodes = new Dictionary<Vector2Int, PathNode>();
     protected List<PathNode> openList;
     protected Dictionary<Vector2Int, PathNode> closedList;
+    protected PathNode cachedStartNode = null;
     protected PathNode cachedEndNode = null;
 
     protected bool usePreviousPathAsPriority = false; // TODO: Fix the encapsulated code to work properly, it currently breaks if this is true
@@ -74,7 +78,7 @@ public class AStarPathfinding
         return NodeValid(tilemap, node, previous) && !closedList.ContainsKey(node.Position);
     }
 
-    public List<PathNode> FindPath(Tilemap tilemap, Vector2 startF, Vector2 endF)
+    public List<PathNode> FindInformedPath(Tilemap tilemap, Vector2 startF, Vector2 endF)
     {
         // turn starting vector into grid space
         Vector3Int start3 = tilemap.WorldToCell(startF);
@@ -83,10 +87,85 @@ public class AStarPathfinding
         Vector2Int end = new Vector2Int(end3.x, end3.y);
 
         // Initialize starting nodes
-        PathNode startNode = this[start].Initialize(0);
+        // start node MUST be reinitialized so that we can validate path from previous calculations
+        PathNode startNode = this[start].Reinitialize(0); 
         PathNode endNode = this[end].Initialize();
 
-        if (!PrepareForNewTarget(start, end, out openList, out closedList))
+        // Mark nodes as stale or uninitialized when necessary
+        PrepareForNewTarget(startNode, endNode);
+
+        // cache the previously calculated open list
+        List<PathNode> cachedOpenList = openList;
+
+        // validation iteration of find path: open list only contains start node, it doesn't updated nodes which already have it as a parent
+        List<PathNode> validatedPath = FindPath(tilemap, startNode, endNode, new List<PathNode>(), new Dictionary<Vector2Int, PathNode>(), 
+            out List<PathNode> validatedOpenList, out Dictionary<Vector2Int, PathNode> validatedClosedList, true);
+
+        // Create a new open list excluding nodes we've already searched:
+        // No nodes that are in the vaildatedClosedList
+        // No nodes that are in the closedList and not in the validatedOpenList
+        // Yes nodes that are in the validatedOpenList
+        // Yes nodes that are in the openList and not in the validatedClosedList
+        // Also, a new closed list that contains:
+        // Yes nodes that are in the closedList and not in the validatedOpenList
+        // Yes nodes that are in the validatedClosedList
+        Dictionary<Vector2Int, PathNode> freshOpenList = new Dictionary<Vector2Int, PathNode>();
+        foreach (PathNode pathNode in validatedOpenList)
+        {
+            freshOpenList.TryAdd(pathNode.Position, pathNode);
+            closedList.Remove(pathNode.Position);
+        }
+        foreach (PathNode node in cachedOpenList)
+        {
+            if (!validatedClosedList.ContainsKey(node.Position))
+                freshOpenList.TryAdd(node.Position, node);
+        }
+
+        openList = freshOpenList.Values.ToList();
+        foreach (KeyValuePair<Vector2Int, PathNode> keyValue in validatedClosedList)
+        {
+            closedList.TryAdd(keyValue.Key, keyValue.Value);
+        }
+
+        // Check if the closed list already contains the end node
+        if (closedList.ContainsKey(endNode.Position))
+        {
+            return CalculatePath(startNode, endNode);
+        }
+
+        // Check if the validation failed to find a path
+        if (validatedPath == null)
+        {
+            // if so, recalculate FCosts and find a new path with the new open list
+            RecalculateStaleFCosts(openList, endNode);
+            validatedPath = FindPath(tilemap, startNode, endNode, openList, closedList, false);
+        }
+
+
+        return validatedPath;
+    }
+
+    public List<PathNode> FindPath(Tilemap tilemap, PathNode startNode, PathNode endNode,
+        List<PathNode> openList, Dictionary<Vector2Int, PathNode> closedList, bool avoidPrecalculatedNodes)
+    {
+        return FindPath(tilemap, startNode,endNode, openList, closedList, out List<PathNode> outOpenList, out Dictionary<Vector2Int, PathNode> outClosedList, avoidPrecalculatedNodes);
+    }
+
+    public List<PathNode> FindPath(Tilemap tilemap, PathNode startNode, PathNode endNode, 
+        List<PathNode> openList, Dictionary<Vector2Int, PathNode> closedList, 
+        out List<PathNode> returnedOpenList, out Dictionary<Vector2Int, PathNode> returnedClosedList,
+        bool avoidPrecalculatedNodes)
+    {
+        if (openList == null)
+            openList = new List<PathNode>();
+        if (closedList == null)
+            closedList = new Dictionary<Vector2Int, PathNode>();
+
+        returnedOpenList = openList;
+        returnedClosedList = closedList;
+
+        // If the closed and open lists do not contain the start node, add the start node
+        if (!closedList.ContainsKey(startNode.Position) && !GridUtility.SortedListContains(openList, startNode, nodeCostComparer))
         {
             startNode.HCost = CalculateDistanceCost(startNode, endNode);
             startNode.CalculateFCost();
@@ -104,36 +183,46 @@ public class AStarPathfinding
             if (currentNode == endNode)
             {
                 // return the calculated path
-                return CalculatePath(currentNode);
+                return CalculatePath(startNode, currentNode);
             }
 
             // remove the grabbed node and add it the closed list (we know it's not the target and it has the best FCost it can now)
             openList.RemoveAt(0);
             closedList.TryAdd(currentNode.Position, currentNode);
 
-            if (currentNode.PriorityFlag)
-            {
-
-            }
-
             // Get the neighboring nodes (as long as they're not already searched in the closed list)
             List<PathNode> neighbors = GridUtility.GetNearValidNode(tilemap, currentNode, GetNode, NodeValidUnsearched, 1);
             foreach (PathNode neighbor in neighbors)
             {
+                // Check if current node is already a neighbor of target node
+                if (avoidPrecalculatedNodes && neighbor.ParentNode == currentNode)
+                {
+                    // (try to) remove from the list because we're going to update the value it's sorted by
+                    GridUtility.TryPopFromSortedList(openList, neighbor, nodeCostComparer, out PathNode poppedNeighbor);
+                    // If so, update the FCost so that other nodes don't claim it
+                    int targetGCost = currentNode.GCost + CalculateDistanceCost(currentNode, neighbor);
+                    // update the parent, HCost, and FCost
+                    neighbor.UpdateParent(currentNode, targetGCost);
+                    neighbor.HCost = CalculateDistanceCost(neighbor, endNode);
+                    neighbor.CalculateFCost();
+                    // Note: we're not adding it to the open list because it must have a previously calculated
+                    // shortest path from a previous iteration of calculations
+                    continue;
+                }
+
+                // Reinitialize node so that we don't have any skewed data
+                // If current node is stale, then it may have an improper FCost because it was
+                // calculated with respect to the wrong starting location
+                if (neighbor.StaleFlag)
+                    neighbor.Reinitialize();
+
                 // calculate the pending path cost
                 int tentativeCost = currentNode.GCost + CalculateDistanceCost(currentNode, neighbor);
                 // if it's better, update that node
                 // if a node is unsearched, it will always be better because they're initialized to infinite GCost (path cost)
                 if (tentativeCost < neighbor.GCost)
                 {
-                    // (try to) remove from the list because we're going to update the value it's sorted by
-                    GridUtility.TryPopFromSortedList(openList, neighbor, nodeCostComparer, out PathNode poppedNeighbor); 
-                    // update the parent, HCost, and FCost
-                    neighbor.UpdateParent(currentNode, tentativeCost);
-                    neighbor.HCost = CalculateDistanceCost(neighbor, endNode);
-                    neighbor.CalculateFCost(); 
-                    // Put it back into the list after updating FCost
-                    GridUtility.InsertIntoSortedList(openList, neighbor, nodeCostComparer);
+                    UpdateAndAddNode(currentNode, neighbor, endNode, openList, tentativeCost);
                 }
             }
         }
@@ -141,8 +230,21 @@ public class AStarPathfinding
         return null;
     }
 
-    public List<PathNode> CalculatePath(PathNode end)
+    protected void UpdateAndAddNode(PathNode currentNode, PathNode neighborNode, PathNode endNode, List<PathNode> openList, int newGCost)
     {
+        // (try to) remove from the list because we're going to update the value it's sorted by
+        GridUtility.TryPopFromSortedList(openList, neighborNode, nodeCostComparer, out PathNode poppedNeighbor);
+        // update the parent, HCost, and FCost
+        neighborNode.UpdateParent(currentNode, newGCost);
+        neighborNode.HCost = CalculateDistanceCost(neighborNode, endNode);
+        neighborNode.CalculateFCost();
+        // Put it back into the list after updating FCost
+        GridUtility.InsertIntoSortedList(openList, neighborNode, nodeCostComparer);
+    }
+
+    public List<PathNode> CalculatePath(PathNode start, PathNode end)
+    {
+        cachedStartNode = start;
         cachedEndNode = end;
         List<PathNode> nodes = new List<PathNode>();
         PathNode currentNode = end;
@@ -186,7 +288,7 @@ public class AStarPathfinding
 
     public List<Vector2> FindPositionPath(Tilemap tilemap, Vector2 startF, Vector2 endF)
     {
-        List<PathNode> path = FindPath(tilemap, startF, endF);
+        List<PathNode> path = FindInformedPath(tilemap, startF, endF);
         if (path == null)
             return new List<Vector2>();
         return PathToPositions(tilemap, path);
@@ -198,87 +300,58 @@ public class AStarPathfinding
     }
 
     // Returns true if the current start is on the priority path
-    public bool PrepareForNewTarget(Vector2Int start, Vector2Int newTarget, out List<PathNode> openList, out Dictionary<Vector2Int, PathNode> closedList)
+    public bool PrepareForNewTarget(PathNode startNode, PathNode endNode)
     {
-        openList = new List<PathNode>();
-        closedList = new Dictionary<Vector2Int, PathNode>();
-        if (validNodes.Count == 0 || cachedEndNode == null)
+        // if no preexisting calculations exist, return false
+        if (validNodes.Count == 0 || cachedEndNode == null || cachedStartNode == null)
         {
             return false;
         }
 
-        PathNode startNode = new PathNode(start);
-        PathNode endNode = new PathNode(newTarget);
-        bool startOnPriorityPath = false;
-        if (usePreviousPathAsPriority)
-        {
-            List<PathNode> priorityPath = new List<PathNode>();
-            foreach (PathNode optPathNode in cachedEndNode.TraceParent())
-            {
-                //Debug.Log("Tracing parent :)");
-                priorityPath.Add(optPathNode);
-                optPathNode.PriorityFlag = true;
-                if (optPathNode == startNode)
-                {
-                    optPathNode.Reinitialize(0);
-                    optPathNode.HCost = CalculateDistanceCost(optPathNode, endNode);
-                    optPathNode.CalculateFCost();
-                    //Debug.Log("Set start node " + optPathNode.Position + " to new FCost: " + optPathNode.FCost);
-                    startOnPriorityPath = true;
-                    break;
-                }
-            }
+        // if the start and end nodes are the same, no calculations are stale
+        if (cachedStartNode == startNode && endNode == cachedEndNode)
+            return false;
 
-            if (startOnPriorityPath)
-            {
-                priorityPath.Reverse();
-                for (int i = 0; i < priorityPath.Count - 1; i++)
-                {
-                    //Debug.Log("Set node " + priorityPath[i + 1].Position + " parent to " + priorityPath[i].Position);
-                    priorityPath[i + 1].Reinitialize();
-                    int gCost = priorityPath[i].GCost + CalculateDistanceCost(priorityPath[i], priorityPath[i + 1]);
-                    priorityPath[i + 1].UpdateParent(priorityPath[i], gCost);
-                    priorityPath[i + 1].HCost = CalculateDistanceCost(priorityPath[i + 1], endNode);
-                    priorityPath[i + 1].CalculateFCost();
-                    //Debug.Log("Set priority path node " + priorityPath[i + 1].Position + " to new FCost: " + priorityPath[i + 1].FCost + " from gCost " + gCost);
-                }
-            }
-            else
-            {
-                foreach (PathNode node in priorityPath)
-                {
-                    node.PriorityFlag = false;
-                }
-                priorityPath.Clear();
-            }
-        }
+        // TODO: add parent trace of cached end node to see if the target is
+        // on a previously calculated path and if the agent is currently
+        // following that same path... if so, just return the old path with
+        // the extraneous ends cut off
 
-        List<Vector2Int> pendingRemoval = new List<Vector2Int>();
         foreach (KeyValuePair<Vector2Int, PathNode> keyValue in validNodes)
         {
-            // Debug.Log("Iterating on node " + keyValue.Key);
-            if (keyValue.Value.PriorityFlag)
-            {
-                keyValue.Value.PriorityInitialize(CalculateDistanceCost(keyValue.Value, endNode));
-                GridUtility.InsertIntoSortedList(openList, keyValue.Value, nodeCostComparer);
-                // ? closedList.Add(keyValue.Key, keyValue.Value);
-                continue;
-            }
-
-            if (keyValue.Value.Initialized)
-            {
-                keyValue.Value.Uninitialize();
-                continue;
-            }
-
-            pendingRemoval.Add(keyValue.Key);
+            keyValue.Value.StaleFlag = true;
         }
-        foreach (Vector2Int vec in pendingRemoval)
+
+        return true;
+    }
+
+    public void RecalculateStaleFCosts(List<PathNode> openList, PathNode endNode)
+    {
+        foreach (PathNode staleOpenNode in openList)
         {
-            validNodes.Remove(vec);
+            if (!staleOpenNode.StaleFlag)
+                continue;
+            PathNode staleNode = staleOpenNode;
+            foreach (PathNode parentNode in staleOpenNode.TraceParent())
+            {
+                // if a node is found that is not stale, update the GCost
+                if (!parentNode.StaleFlag)
+                {
+                    // calculate disparity in GCosts along this path
+                    int updatedGCost = parentNode.GCost + CalculateDistanceCost(staleNode, parentNode);
+                    int gCostDiff = updatedGCost - staleNode.GCost;
+                    // update the calculation that's already been made
+                    staleNode.GCost = updatedGCost;
+                    // fix disparity on the current open node
+                    staleOpenNode.GCost += gCostDiff;
+                    // recalculate FCost
+                    staleOpenNode.HCost = CalculateDistanceCost(staleOpenNode, endNode);
+                    staleOpenNode.CalculateFCost();
+                    break;
+                }
+                staleNode = parentNode;
+            }
         }
-
-        return startOnPriorityPath;
     }
 
     public void ClearCachedNodes()
