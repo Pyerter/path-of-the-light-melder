@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1737c66e08619845be857023854969c, type: 3}
-  m_Name: Backstep
+  m_Script: {fileID: 11500000, guid: 3dd3cd40a0d1f9f4c8c5f367e6fc8978, type: 3}
+  m_Name: DashableLocker
   m_EditorClassIdentifier: 
-  animationName: Backstep
-  alternateStateNames: []
-  animationLayerIndex: 1
-  shortable: 0
-  forwardMovement: -2
+  controlLockScheme: {fileID: 11400000, guid: 090d31d32c6893c42a08dd4925ce9be9, type: 2}
+  controlLock:
+    priority: 0
+    locks:
+      mask: 24583
+      name: Full Locker

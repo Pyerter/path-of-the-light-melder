@@ -9,6 +9,7 @@ public class PMAnimationTrigger : PlayerMotion
     [SerializeField] protected string animationName = "Punch";
     [SerializeField] protected List<string> alternateStateNames = new List<string>();
     [SerializeField] protected int animationLayerIndex = 1;
+    [SerializeField] protected bool shortable = false;
     [SerializeField][Range(-2, 2)] protected float forwardMovement = 0f;
     protected bool activeMotion = false;
     public override bool ActiveMotion { get { return activeMotion; } }
@@ -45,19 +46,27 @@ public class PMAnimationTrigger : PlayerMotion
             controller.MotionController.LockFlip = true;
             OnInputMotion(controller, input);
             return modifiers;
+        } else if (input.IsReleased() && shortable)
+        {
+            return CancelMotion(controller, motionData);
         }
         return new List<MotionDataModifier>();
     }
 
     public override List<MotionDataModifier> CancelMotion(PlayerController controller, MotionData motionData = default)
     {
+        Debug.Log("Canceling motion.");
         if (cachedLocker != null)
         {
             controller.RemoveLocker(cachedLocker);
             cachedLocker = null;
         }
         controller.MotionController.LockFlip = false;
-        return new List<MotionDataModifier>();
+        List<MotionDataModifier> modifiers = new List<MotionDataModifier>();
+        if (activeMotion)
+            modifiers.Add(new MotionDataSettingsModifier(new AnimatorBoolSetting("CancelAbility", true, true)));
+        activeMotion = false;
+        return modifiers;
     }
 
     public override List<MotionDataModifier> UpdateMotion(PlayerController controller, MotionData motionData = default)

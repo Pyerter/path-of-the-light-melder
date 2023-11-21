@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Identity
 {
     private static uint nextID;
@@ -22,18 +23,18 @@ public class Identity
         return val.ToString("D" + numbMaxString);
     }
 
-    private Pair<uint, uint> idPair;
+    [SerializeField] private Pair<uint, uint> idPair;
     public Pair<uint, uint> IDPair { get { return idPair; } }
-    private string id;
+    [SerializeField] private string id;
     public string ID { get { return id; } }
 
-    private string name;
+    [SerializeField] private string name;
     public string Name { get { return name; } set { if (!NameLock) { name = value; uniqueName = value + ":" + id; NameLock = true; } else { Debug.LogWarning("Unable to change name. Name is locked. Call Identity.UnlockName()."); } } }
 
-    private bool nameLock = false;
+    [SerializeField] private bool nameLock = false;
     public bool NameLock { get { return nameLock; } private set { nameLock = value; } }
 
-    private string uniqueName;
+    [SerializeField] private string uniqueName;
     public string UniqueName { get { return uniqueName; } }
 
     public Identity(string name = null) : this(GetNextID())
