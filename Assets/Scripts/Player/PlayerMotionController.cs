@@ -9,6 +9,9 @@ public class PlayerMotionController : MonoBehaviour
     public Rigidbody2D RB { get { if (rb == null) rb = SearchForRB(); return rb; } }
     public bool Valid { get { return rb != null; } }
 
+    [SerializeField] protected HotSwapMotionController hotSwapMotionController;
+    public HotSwapMotionController HotSwapMotionController { get { return hotSwapMotionController; } }
+
     [Header("General Motions")]
     [SerializeField] protected PlayerMotionPair blockMotion;
     [SerializeField] protected PlayerMotionPair punchMotion;

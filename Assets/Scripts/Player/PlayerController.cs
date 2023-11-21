@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] protected PlayerMotionController motionController;
     public PlayerMotionController MotionController { get { return motionController; } }
+    public HotSwapMotionController HotSwapMotionController { get { return MotionController.HotSwapMotionController; } }
 
     [SerializeField] protected ComplexAnimator complexAnimator;
     public ComplexAnimator ComplexAnimator { get { return complexAnimator; } }
@@ -18,7 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] protected Transform pathfinderTarget;
     public Transform PathfinderTarget { get { return pathfinderTarget; } }
 
-    [Header("Control Lockers")]
+    [Header("General Movement Control Lockers")]
     [SerializeField] protected StandardControlLocker runLocker;
     public StandardControlLocker RunLocker { get { return runLocker; } }
     [SerializeField] protected StandardControlLocker jumpLocker;

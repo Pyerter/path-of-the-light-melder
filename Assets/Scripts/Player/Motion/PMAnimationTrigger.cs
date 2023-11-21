@@ -11,8 +11,6 @@ public class PMAnimationTrigger : PlayerMotion
     [SerializeField] protected int animationLayerIndex = 1;
     [SerializeField] protected bool shortable = false;
     [SerializeField][Range(-2, 2)] protected float forwardMovement = 0f;
-    protected bool activeMotion = false;
-    public override bool ActiveMotion { get { return activeMotion; } }
     protected StandardControlLocker cachedLocker;
 
     public virtual void OnInputMotion(PlayerController controller, BufferedInput.InputData input)
