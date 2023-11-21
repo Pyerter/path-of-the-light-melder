@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74ac6d9dd68704541818696bc85ab3b5, type: 3}
   m_Name: Punch
   m_EditorClassIdentifier: 
+  animationName: Punch
+  alternateStateNames:
+  - PowerPunch
+  animationLayerIndex: 1
