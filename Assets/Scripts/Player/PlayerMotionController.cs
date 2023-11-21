@@ -12,8 +12,11 @@ public class PlayerMotionController : MonoBehaviour
     [Header("General Motions")]
     [SerializeField] protected PlayerMotionPair blockMotion;
     [SerializeField] protected PlayerMotionPair punchMotion;
+    [SerializeField] protected PlayerMotionPair backstepMotion;
     public PlayerMotionPair BlockMotion { get { return blockMotion; } }
     public PlayerMotionPair PunchMotion { get { return punchMotion; } }
+    public PlayerMotionPair BackstepMotion { get { return backstepMotion; } }
+    public PlayerMotionPair[] AllMotions { get { return new PlayerMotionPair[] { BlockMotion, PunchMotion, BackstepMotion }; } }
 
     [Header("Movement Variables")]
     [SerializeField] private Collider2D walkingCollider;
@@ -47,7 +50,10 @@ public class PlayerMotionController : MonoBehaviour
 
     [Header("2D Facing")]
     [SerializeField] private bool flipped = false; // false is right, true is left
+    [SerializeField] private bool lockFlip = false;
+    public bool LockFlip { get { return lockFlip; } set { lockFlip = value; } }
     public int ForwardMult { get { return flipped ? -1 : 1; } }
+    public int VelocityMult { get { return (int)Mathf.Sign(RB.velocity.x); } }
 
     [Header("Moving")]
     protected bool inputMoving;
@@ -73,8 +79,10 @@ public class PlayerMotionController : MonoBehaviour
 
         jumping.valueProvider = GetFallSpeed;
 
-        blockMotion.Initialize();
-        punchMotion.Initialize();
+        foreach (PlayerMotionPair motionPair in AllMotions)
+        {
+            motionPair.Initialize();
+        }
     }
 
     public bool IsGrounded()
@@ -141,6 +149,9 @@ public class PlayerMotionController : MonoBehaviour
 
     public void CheckFlip(float forward)
     {
+        if (lockFlip)
+            return;
+
         bool shouldFlip = false;
         if (flipped && forward > 0)
             shouldFlip = true;
@@ -157,7 +168,7 @@ public class PlayerMotionController : MonoBehaviour
 
     public void MoveForward(float speed, bool aerialControl = false)
     {
-        speed = GetAdditiveSpeed(speed, ForwardMult);
+        speed = GetAdditiveSpeed(speed);
         Vector2 movement = rb.velocity;
         movement.x = speed;
         if (aerialControl)
@@ -171,24 +182,37 @@ public class PlayerMotionController : MonoBehaviour
         rb.velocity = Vector2.Lerp(rb.velocity, movement, aerialMovementControl);
     }
 
-    public float GetAdditiveSpeed(float speed, float moveDirection = 1)
+    public float GetAdditiveSpeed(float speed)
     {
-        speed = Mathf.Abs(speed);
-        float currentSpeed = Mathf.Max(Mathf.Abs(rb.velocity.x), speed);
-        if (currentSpeed > speed)
+        float moveDirection = speed != 0 ? Mathf.Sign(speed) : ForwardMult;
+        float abSpeed = Mathf.Abs(speed);
+        bool shareDirection = Mathf.Sign(rb.velocity.x) == Mathf.Sign(speed);
+
+        float currentSpeed = Mathf.Max(Mathf.Abs(rb.velocity.x), abSpeed);
+
+        if (!shareDirection || currentSpeed > abSpeed)
+        {
+            currentSpeed = abSpeed;
+        }
+        else if (currentSpeed > abSpeed)
         {
             float momentDeccel = (grounded ? momentumDecceleration : aerialMomentumDecceleration) * momentumDeccelMultiplier;
-            currentSpeed = Mathf.Lerp(currentSpeed, speed, momentDeccel);
-        } 
-        else if (currentSpeed < speed)
-        {
-            currentSpeed = speed;
+            currentSpeed = Mathf.Lerp(currentSpeed, abSpeed, momentDeccel);
         }
-        else if (MathUtility.Equivalent(currentSpeed, 0))
+
+        if (MathUtility.Equivalent(currentSpeed, 0))
         {
             currentSpeed = 0;
         }
+
         return currentSpeed * moveDirection;
+    }
+
+    public void FlipSpeed()
+    {
+        Vector2 movement = rb.velocity;
+        movement.x = -movement.x;
+        rb.velocity = movement;
     }
 
     public void DragMomentum()
@@ -228,13 +252,10 @@ public class PlayerMotionController : MonoBehaviour
 
         MotionData motionData = new MotionData(controller, rb);
 
-        if (punchMotion.motion.ActiveMotion)
+        foreach (PlayerMotionPair motionPair in AllMotions)
         {
-            punchMotion.motion.UpdateMotion(controller, motionData);
-        }
-        if (blockMotion.motion.ActiveMotion)
-        {
-            blockMotion.motion.UpdateMotion(controller, motionData);
+            if (motionPair.motion.ActiveMotion)
+                motionPair.motion.UpdateMotion(controller, motionData);
         }
 
         return motionData;

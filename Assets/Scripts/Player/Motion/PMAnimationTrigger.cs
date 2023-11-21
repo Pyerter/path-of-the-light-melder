@@ -9,9 +9,25 @@ public class PMAnimationTrigger : PlayerMotion
     [SerializeField] protected string animationName = "Punch";
     [SerializeField] protected List<string> alternateStateNames = new List<string>();
     [SerializeField] protected int animationLayerIndex = 1;
+    [SerializeField][Range(-2, 2)] protected float forwardMovement = 0f;
     protected bool activeMotion = false;
     public override bool ActiveMotion { get { return activeMotion; } }
     protected StandardControlLocker cachedLocker;
+
+    public virtual void OnInputMotion(PlayerController controller, BufferedInput.InputData input)
+    {
+
+    }
+
+    public virtual void OnPreUpdateMotion(PlayerController controller, MotionData motionData)
+    {
+
+    }
+
+    public virtual void OnPostUpdateMotion(PlayerController controller, MotionData motionData)
+    {
+
+    }
 
     public override List<MotionDataModifier> InputMotion(PlayerController controller, InputData input, BufferedInput.StandardControlLocker locker = null, MotionData motionData = default)
     {
@@ -26,24 +42,42 @@ public class PMAnimationTrigger : PlayerMotion
             }
             List<MotionDataModifier> modifiers = new List<MotionDataModifier>();
             modifiers.Add(new MotionDataSettingsModifier(new AnimatorBoolSetting(animationName, true, true)));
+            controller.MotionController.LockFlip = true;
+            OnInputMotion(controller, input);
             return modifiers;
         }
         return new List<MotionDataModifier>();
     }
 
+    public override List<MotionDataModifier> CancelMotion(PlayerController controller, MotionData motionData = default)
+    {
+        if (cachedLocker != null)
+        {
+            controller.RemoveLocker(cachedLocker);
+            cachedLocker = null;
+        }
+        controller.MotionController.LockFlip = false;
+        return new List<MotionDataModifier>();
+    }
+
     public override List<MotionDataModifier> UpdateMotion(PlayerController controller, MotionData motionData = default)
     {
+        OnPreUpdateMotion(controller, motionData);
         if (!StateMatchesName(controller))
         {
             activeMotion = false;
             Debug.Log("Ending animation: " + animationName);
         }
-        //controller.MotionController.Move(controller, 0);
-        if (!activeMotion && cachedLocker != null)
+
+        if (!activeMotion)
         {
-            controller.RemoveLocker(cachedLocker);
-            cachedLocker = null;
+            CancelMotion(controller, motionData);
         }
+        else if (forwardMovement != 0)
+        {
+            controller.MotionController.Move(controller, forwardMovement * controller.MotionController.ForwardMult);
+        }
+        OnPostUpdateMotion(controller, motionData);
         return new List<MotionDataModifier>();
     }
 

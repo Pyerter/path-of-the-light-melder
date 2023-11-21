@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74ac6d9dd68704541818696bc85ab3b5, type: 3}
-  m_Name: Punch
+  m_Script: {fileID: 11500000, guid: f1737c66e08619845be857023854969c, type: 3}
+  m_Name: Backstep
   m_EditorClassIdentifier: 
-  animationName: Punch
-  alternateStateNames:
-  - PowerPunch
+  animationName: Backstep
+  alternateStateNames: []
   animationLayerIndex: 1
-  forwardMovement: 0.3
+  forwardMovement: -2

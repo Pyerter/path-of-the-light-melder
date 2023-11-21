@@ -16,5 +16,5 @@ MonoBehaviour:
   controlLock:
     priority: 0
     locks:
-      mask: 24583
+      mask: 57351
       name: Full Locker

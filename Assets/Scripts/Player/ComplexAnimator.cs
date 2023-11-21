@@ -36,6 +36,16 @@ public class ComplexAnimator : MonoBehaviour
     {
         return Anim.GetCurrentAnimatorStateInfo(layerIndex).IsName(name);
     }
+
+    public bool ClipNameIs(string name, int layerIndex = 0)
+    {
+        foreach (AnimatorClipInfo clip in Anim.GetCurrentAnimatorClipInfo(layerIndex))
+        {
+            if (clip.clip.name.Equals(name))
+                return true;
+        }
+        return false;
+    }
 }
 
 public interface AnimatorSetting

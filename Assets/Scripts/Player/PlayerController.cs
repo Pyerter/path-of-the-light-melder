@@ -81,6 +81,11 @@ public class PlayerController : MonoBehaviour
         InputMotion(MotionController.BlockMotion, input);
     }
 
+    public void Backstep(InputData input)
+    {
+        InputMotion(MotionController.BackstepMotion, input);
+    }
+
     public void InputMotion(PlayerMotionPair motionPair, InputData input)
     {
         List<AnimatorSetting> settings = MotionData.ApplyModifiers(motionPair.motion.InputMotion(this, input, motionPair.control), new MotionData(ComplexAnimator)).AsSettings();

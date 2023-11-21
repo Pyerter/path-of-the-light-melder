@@ -12,4 +12,5 @@ public abstract class PlayerMotion : ScriptableObject
     public abstract bool ActiveMotion { get; }
     public abstract List<MotionDataModifier> InputMotion(PlayerController controller, BufferedInput.InputData input, BufferedInput.StandardControlLocker locker = null, MotionData motionData = default);
     public abstract List<MotionDataModifier> UpdateMotion(PlayerController controller, MotionData motionData = default);
+    public abstract List<MotionDataModifier> CancelMotion(PlayerController controller, MotionData motionData = default);
 }

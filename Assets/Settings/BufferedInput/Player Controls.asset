@@ -23,6 +23,8 @@ MonoBehaviour:
     name: Player/Jump
   - mask: 16384
     name: Player/Block
+  - mask: 32768
+    name: Player/Backstep
   - mask: 8
     name: UI/Navigate
   - mask: 16
