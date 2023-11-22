@@ -44,7 +44,7 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
             if (info.clip.name.Equals(name))
                 return true;
         }
-        Debug.Log("Clip is not playing: " + name);
+        //Debug.Log("Clip is not playing: " + name);
         return false;
     }
     public bool MatchesCurrentState(PlayerMotion motion)
@@ -107,7 +107,7 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
         this[targetIndex].TrySetCurrentAnimation(animation);
         HotBool = true;
         changedOverrides = true;
-        Debug.Log("Added animation");
+        //Debug.Log("Added animation");
     }
 
     public bool TryAddAnimation(HotSwapAnimation animation)
@@ -127,14 +127,15 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
 
     public void UpdateStates()
     {
+        // If not running, validate that animations are indeed empty
         if (!HotBool && ValidateEmptyQueue())
             return;
 
-        HotBool = true; // if validation failed, ensure HotBool is true
+        // If running, also validate that animations are indeed non-null
+        if (!ValidateCurrentAnimations())
+            return;
 
-        // Check if current state is empty... if so, move to next state
-        if (CurrentState.NoAnimation)
-            CurrentIndex = NextIndex;
+        HotBool = true; // if validations have succeeded, ensure HotBool is true
         
         // Update the current state to move along if it's done
         bool currentStateIsPlaying = CurrentState.CurrentAnimation.ClipIsPlaying(this) || HotSwapStateIsName(CurrentState.StateName);
@@ -155,6 +156,26 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
             HotBool = false;
             HotTrigger(true);
         }
+    }
+
+    public bool ValidateCurrentAnimations()
+    {
+        if (CurrentState.NoAnimation)
+            CurrentIndex = NextIndex;
+        bool hasAnimation = CurrentState.HasAnimation;
+        if (!hasAnimation)
+        {
+            if (ValidateEmptyQueue())
+            {
+                HotBool = false;
+                HotTrigger(true);
+            } else
+            {
+                hasAnimation = true;
+            }
+        }
+
+        return hasAnimation;
     }
 
     public bool ValidateEmptyQueue()

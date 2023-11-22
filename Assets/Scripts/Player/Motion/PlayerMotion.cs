@@ -118,7 +118,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     {
         if (InMotion)
         {
-            Debug.Log("Ticking Motion: " + MotionName);
+            //Debug.Log("Ticking Motion: " + MotionName);
             modifierFactory = TickMotion(controller);
             return true;
         }
@@ -130,7 +130,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     {
         if (ShouldCancelMotion(controller))
         {
-            Debug.Log("Cancelling motion " + MotionName);
+            //Debug.Log("Cancelling motion " + MotionName);
             InMotion = false;
             return CancelMotion(controller);
         }

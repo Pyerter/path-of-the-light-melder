@@ -7,7 +7,7 @@ public class HotSwapMotionController : MonoBehaviour
     [SerializeField] protected ComplexAnimatorHotSwapper hotSwapper;
     public ComplexAnimatorHotSwapper HotSwapper { get { return hotSwapper; } }
 
-    [SerializeField] protected PlayerMotion currentMotion;
+    protected PlayerMotion currentMotion;
     protected PlayerMotion queuedMotion;
 
     public bool HasCurrentMotion { get { return currentMotion != null; } }
@@ -70,7 +70,7 @@ public class HotSwapMotionController : MonoBehaviour
             }
             currentMotion = motion;
             HotSwapper.PendingHotSwap = motion;
-            Debug.Log("Set current hot swap motion to " + motion.MotionName);
+            //Debug.Log("Set current hot swap motion to " + motion.MotionName);
             return true;
         }
         return false;
