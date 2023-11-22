@@ -1881,6 +1881,8 @@ GameObject:
   - component: {fileID: 175700971}
   - component: {fileID: 175700972}
   - component: {fileID: 175700973}
+  - component: {fileID: 175700975}
+  - component: {fileID: 175700974}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Untagged
@@ -1976,6 +1978,38 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &175700974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175700970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49060414cc4a05d48af93cb4e472bc81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shaderController: {fileID: 0}
+  flashShaderName: _flash_shader
+  flashShader: {fileID: 0}
+  flashColor: {r: 0, g: 0, b: 0, a: 0}
+  flashFadeSpeed: 0.02
+--- !u!114 &175700975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175700970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e5ef53c79197c84b87bd1d091245c41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 175700972}
+  materials: []
+  baseMaterial: {fileID: 0}
 --- !u!1 &239024020
 GameObject:
   m_ObjectHideFlags: 0
