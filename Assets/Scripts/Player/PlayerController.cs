@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour
     public void Punch(InputData input)
     {
         InputMotion(MotionController.PunchMotion, input);
+        InputMotion(MotionController.AerialPunchMotion, input);
     }
 
     public void Block(InputData input)

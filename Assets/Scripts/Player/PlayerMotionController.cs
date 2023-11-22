@@ -16,10 +16,12 @@ public class PlayerMotionController : MonoBehaviour
     [SerializeField] protected PlayerMotionPair blockMotion;
     [SerializeField] protected PlayerMotionPair punchMotion;
     [SerializeField] protected PlayerMotionPair backstepMotion;
+    [SerializeField] protected PlayerMotionPair aerialPunchMotion;
     public PlayerMotionPair BlockMotion { get { return blockMotion; } }
     public PlayerMotionPair PunchMotion { get { return punchMotion; } }
     public PlayerMotionPair BackstepMotion { get { return backstepMotion; } }
-    public PlayerMotionPair[] AllMotions { get { return new PlayerMotionPair[] { BlockMotion, PunchMotion, BackstepMotion }; } }
+    public PlayerMotionPair AerialPunchMotion { get { return aerialPunchMotion; } }
+    public PlayerMotionPair[] AllMotions { get { return new PlayerMotionPair[] { BlockMotion, PunchMotion, BackstepMotion, AerialPunchMotion }; } }
 
     [Header("Movement Variables")]
     [SerializeField] private Collider2D walkingCollider;
@@ -50,6 +52,9 @@ public class PlayerMotionController : MonoBehaviour
     [SerializeField] private FloatState jumping = new FloatState(0.05f); // threshold is fall speed threshold
     public float GetFallSpeed() { return rb.velocity.y; }
     public bool removeJumpLockOnGrounded = false;
+    protected bool aerial = false;
+    public bool Jumping { get { return jumping; } }
+    public bool Aerial { get { return aerial; } }
 
     [Header("2D Facing")]
     [SerializeField] private bool flipped = false; // false is right, true is left
@@ -110,6 +115,7 @@ public class PlayerMotionController : MonoBehaviour
         if (!nowJumping && ((wasJumping && controller != null) || (!grounded)))
         {
             removeJumpLockOnGrounded = true;
+            aerial = true;
             controller.AddLocker(controller.JumpLocker);
             //Debug.Log("Added jump locker");
         }
@@ -138,6 +144,7 @@ public class PlayerMotionController : MonoBehaviour
             velocity.y = jumpSpeed;
             rb.velocity = velocity;
             jumping.Update(true);
+            aerial = true;
             return true;
         }
         return false;
@@ -252,6 +259,7 @@ public class PlayerMotionController : MonoBehaviour
         {
             controller.RemoveLocker(controller.JumpLocker);
             removeJumpLockOnGrounded = false;
+            aerial = false;
             //Debug.Log("Removed jump locker");
         }
 

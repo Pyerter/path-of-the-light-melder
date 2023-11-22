@@ -1991,7 +1991,7 @@ GameObject:
   - component: {fileID: 239024028}
   - component: {fileID: 239024029}
   m_Layer: 7
-  m_Name: EnemyPathfinding
+  m_Name: Grimblekin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3365,7 +3365,7 @@ GameObject:
   - component: {fileID: 708014118}
   - component: {fileID: 708014119}
   - component: {fileID: 708014120}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Motion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3404,13 +3404,16 @@ MonoBehaviour:
   hotSwapMotionController: {fileID: 708014120}
   blockMotion:
     motion: {fileID: 11400000, guid: 8051817ff01a02348958608683f3c429, type: 2}
-    control: {fileID: 11400000, guid: bd3923f33c438bb4484c6043e82ca132, type: 2}
+    control: {fileID: 11400000, guid: 2d19552542705a54a8b235803e9d78b5, type: 2}
   punchMotion:
     motion: {fileID: 11400000, guid: 73752372c5c1f35478aa94d69be0fdb2, type: 2}
     control: {fileID: 11400000, guid: 2d19552542705a54a8b235803e9d78b5, type: 2}
   backstepMotion:
     motion: {fileID: 11400000, guid: 7aa8ede58d74dc34ba6f09546e225dca, type: 2}
     control: {fileID: 11400000, guid: 2d19552542705a54a8b235803e9d78b5, type: 2}
+  aerialPunchMotion:
+    motion: {fileID: 11400000, guid: 7e7e50be3d2154e479f73d8a271f65d8, type: 2}
+    control: {fileID: 11400000, guid: b6e687b4927e8094b9ff84adb98c53bc, type: 2}
   walkingCollider: {fileID: 708014119}
   staticMaterial: {fileID: 6200000, guid: 4ee0ed6d38ce01544bd95981c18df68f, type: 2}
   kineticMaterial: {fileID: 6200000, guid: 89b0cf2f195c2d44393c7864487c800e, type: 2}

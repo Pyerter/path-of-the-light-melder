@@ -7,7 +7,7 @@ public class HotSwapMotionController : MonoBehaviour
     [SerializeField] protected ComplexAnimatorHotSwapper hotSwapper;
     public ComplexAnimatorHotSwapper HotSwapper { get { return hotSwapper; } }
 
-    protected PlayerMotion currentMotion;
+    [SerializeField] protected PlayerMotion currentMotion;
     protected PlayerMotion queuedMotion;
 
     public bool HasCurrentMotion { get { return currentMotion != null; } }
@@ -76,13 +76,24 @@ public class HotSwapMotionController : MonoBehaviour
         return false;
     }
 
-    public bool RemoveCurrentMotion(PlayerMotion motion)
+    public bool RemoveCurrentMotion(PlayerMotion motion, bool forceSkip = false)
     {
         if (MotionOccupiesSlot(motion))
         {
             HotSwapper.PendingHotSwap = null;
+            if (forceSkip)
+                HotSwapper.SkipAnimation();
             currentMotion = null;
             MoveQueuedMotionToCurrent();
+            return true;
+        }
+        return false;
+    }
+
+    public bool TryCancelCurrentMotion(PlayerMotion motion)
+    {
+        if (HotSwapper.MatchesCurrentState(motion) && RemoveCurrentMotion(motion, true))
+        {
             return true;
         }
         return false;

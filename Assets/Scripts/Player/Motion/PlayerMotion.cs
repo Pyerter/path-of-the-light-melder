@@ -103,6 +103,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
         if (InMotion)
         {
             InMotion = false;
+            ShouldCancel = false;
             CancelMotion(controller);
             return true;
         }
@@ -132,6 +133,8 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
         {
             //Debug.Log("Cancelling motion " + MotionName);
             InMotion = false;
+            ShouldCancel = false;
+            controller.HotSwapMotionController.TryCancelCurrentMotion(this);
             return CancelMotion(controller);
         }
         return UpdateMotion(controller);

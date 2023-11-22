@@ -83,6 +83,14 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
         }
     }
 
+    public void SkipAnimation()
+    {
+        CurrentState.ClearState();
+        CurrentIndex = NextIndex;
+        changedOverrides = true;
+        HotSkipTrigger(true);
+    }
+
     public void UpdateOverrides()
     {
         GetClipNamePairs(out string[] clipNames, out AnimationClip[] clips);

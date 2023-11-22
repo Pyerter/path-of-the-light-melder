@@ -18,4 +18,6 @@ MonoBehaviour:
   usesMotionSlot: 1
   motionAnimation: {fileID: 11400000, guid: 184b7b7a081e2de4e96e93ed3f1f64d2, type: 2}
   interruptibleMotions: []
+  aerialEffect: 0
+  groundedEffect: 0
   forwardMovement: -2

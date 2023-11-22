@@ -23,7 +23,7 @@ public class HotSwapAnimation : ScriptableObject
 
     public bool ClipIsPlaying(ComplexAnimatorHotSwapper hotSwapper)
     {
-        if (bufferedPlayingDelay < 2)
+        if (bufferedPlayingDelay < 3)
         {
             bufferedPlayingDelay++;
             return true;
