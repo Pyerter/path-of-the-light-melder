@@ -3720,7 +3720,7 @@ MonoBehaviour:
   hotSwapState3:
     stateName: HotSwap3
     currentAnimation: {fileID: 0}
-  hotSwapLayer: 2
+  hotSwapLayer: 1
 --- !u!1 &1382496005
 GameObject:
   m_ObjectHideFlags: 0

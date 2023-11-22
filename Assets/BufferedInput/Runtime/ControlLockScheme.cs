@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BufferedInput
 {
-    [CreateAssetMenu(menuName = "Control Locks/Scheme")]
+    [CreateAssetMenu(menuName = "Buffered Input/Scheme")]
     public class ControlLockScheme : ScriptableObject
     {
         [SerializeField] public List<ActionMask> possibleMasks;
