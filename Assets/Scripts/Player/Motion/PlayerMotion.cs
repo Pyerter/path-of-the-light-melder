@@ -56,6 +56,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
             CachedInput = input;
             CachedLocker = locker;
             ClaimMotionSlot(controller);
+            InMotion = true;
             return ActivateMotion(controller, input, locker);
         }
         if (ShouldAcceptInputUpdate(controller, input))
@@ -76,7 +77,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
 
     public virtual bool ClaimMotionSlot(PlayerController controller)
     {
-        if (UsesMotionSlot && controller.HotSwapMotionController.SetCurrentMotion(this))
+        if (UsesMotionSlot && controller.HotSwapMotionController.SetCurrentMotion(this, controller))
             return true;
         return false;
     }
@@ -93,7 +94,19 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
 
     public virtual bool ShouldCancelMotion(PlayerController controller)
     {
-        return ShouldCancel || (UsesMotionSlot && MotionOccupiesSlot(controller));
+        // Debug.Log("Motion " + MotionName + " occupies slot: " + MotionOccupiesSlot(controller));
+        return ShouldCancel || (UsesMotionSlot && !MotionOccupiesSlot(controller));
+    }
+
+    public virtual bool TryCancelMotion(PlayerController controller)
+    {
+        if (InMotion)
+        {
+            InMotion = false;
+            CancelMotion(controller);
+            return true;
+        }
+        return false;
     }
 
     public virtual bool ShouldAcceptInputUpdate(PlayerController controller, InputData input)
@@ -105,6 +118,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     {
         if (InMotion)
         {
+            Debug.Log("Ticking Motion: " + MotionName);
             modifierFactory = TickMotion(controller);
             return true;
         }
@@ -116,6 +130,8 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     {
         if (ShouldCancelMotion(controller))
         {
+            Debug.Log("Cancelling motion " + MotionName);
+            InMotion = false;
             return CancelMotion(controller);
         }
         return UpdateMotion(controller);

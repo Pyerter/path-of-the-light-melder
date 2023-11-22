@@ -3364,6 +3364,7 @@ GameObject:
   - component: {fileID: 708014117}
   - component: {fileID: 708014118}
   - component: {fileID: 708014119}
+  - component: {fileID: 708014120}
   m_Layer: 0
   m_Name: Motion
   m_TagString: Untagged
@@ -3400,12 +3401,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 414425389}
+  hotSwapMotionController: {fileID: 708014120}
   blockMotion:
     motion: {fileID: 11400000, guid: 8051817ff01a02348958608683f3c429, type: 2}
     control: {fileID: 11400000, guid: bd3923f33c438bb4484c6043e82ca132, type: 2}
   punchMotion:
     motion: {fileID: 11400000, guid: 73752372c5c1f35478aa94d69be0fdb2, type: 2}
-    control: {fileID: 11400000, guid: bd3923f33c438bb4484c6043e82ca132, type: 2}
+    control: {fileID: 11400000, guid: 2d19552542705a54a8b235803e9d78b5, type: 2}
   backstepMotion:
     motion: {fileID: 11400000, guid: 7aa8ede58d74dc34ba6f09546e225dca, type: 2}
     control: {fileID: 11400000, guid: 2d19552542705a54a8b235803e9d78b5, type: 2}
@@ -3470,6 +3472,20 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.4404602, y: 1.22}
   m_Direction: 0
+--- !u!114 &708014120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708014116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97ae84a4173fba541a38bd6aad0151ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hotSwapper: {fileID: 1241440341}
+  currentMotion: {fileID: 0}
 --- !u!1 &1111410945
 GameObject:
   m_ObjectHideFlags: 0

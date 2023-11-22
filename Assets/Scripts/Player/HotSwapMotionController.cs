@@ -7,23 +7,51 @@ public class HotSwapMotionController : MonoBehaviour
     [SerializeField] protected ComplexAnimatorHotSwapper hotSwapper;
     public ComplexAnimatorHotSwapper HotSwapper { get { return hotSwapper; } }
 
-    protected PlayerMotion currentMotion;
+    [SerializeField] protected PlayerMotion currentMotion;
     protected PlayerMotion queuedMotion;
 
     public bool HasCurrentMotion { get { return currentMotion != null; } }
     public bool HasQueuedMotion { get { return queuedMotion != null; } }
 
+    private void FixedUpdate()
+    {
+        CheckToRemoveCurrentMotion();
+    }
+
     public bool MotionOccupiesSlot(PlayerMotion motion)
     {
-        bool nullMatch = (currentMotion == null) == (motion == null);
-        if (!nullMatch)
-            return false;
+        bool nullCheck = (currentMotion == null) || (motion == null);
+        if (nullCheck)
+            return (currentMotion == null) && (motion == null);
         return currentMotion.MotionName.Equals(motion.MotionName);
+    }
+
+    public void CheckToRemoveCurrentMotion()
+    {
+        if (!VerifyCurrentMotionPlaying())
+        {
+            RemoveCurrentMotion(currentMotion);
+            MoveQueuedMotionToCurrent();
+        }
+    }
+
+    public bool VerifyCurrentMotionPlaying()
+    {
+        return hotSwapper.MatchesCurrentState(currentMotion);
     }
 
     public bool CanSetCurrentMotion(PlayerMotion motion)
     {
-        return currentMotion == null;
+        if (currentMotion == null)
+        {
+            return true;
+        }
+        foreach (string motionName in currentMotion.InterruptibleMotions)
+        {
+            if (motion.MotionName.Equals(motionName))
+                return true;
+        }
+        return false;
     }
 
     public bool CanSetQueuedMotion(PlayerMotion motion)
@@ -31,12 +59,18 @@ public class HotSwapMotionController : MonoBehaviour
         return queuedMotion == null;
     }
 
-    public bool SetCurrentMotion(PlayerMotion motion)
+    public bool SetCurrentMotion(PlayerMotion motion, PlayerController controller = null)
     {
         if (CanSetCurrentMotion(motion) && HotSwapper.TryAddAnimation(motion.MotionAnimation))
         {
+            if (currentMotion != null)
+            {
+                currentMotion.TryCancelMotion(controller);
+                HotSwapper.HotSkipTrigger(true);
+            }
             currentMotion = motion;
             HotSwapper.PendingHotSwap = motion;
+            Debug.Log("Set current hot swap motion to " + motion.MotionName);
             return true;
         }
         return false;
@@ -66,7 +100,7 @@ public class HotSwapMotionController : MonoBehaviour
 
     public bool QueueMotion(PlayerMotion motion)
     {
-        if (SetCurrentMotion(motion))
+        if (!HasCurrentMotion && SetCurrentMotion(motion))
         {
             return true;
         }
@@ -79,7 +113,7 @@ public class HotSwapMotionController : MonoBehaviour
 
     public bool MoveQueuedMotionToCurrent()
     {
-        if (HasQueuedMotion && SetCurrentMotion(queuedMotion))
+        if (HasQueuedMotion && !HasCurrentMotion && SetCurrentMotion(queuedMotion))
         {
             queuedMotion = null;
             return true;

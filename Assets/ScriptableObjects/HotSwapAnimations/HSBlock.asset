@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: HSBlock
   m_EditorClassIdentifier: 
   clip: {fileID: 7400000, guid: a6d4fceb466946840b5ce3a83b74978f, type: 2}
+  clipName: WiseOneBlock
+  alternateNames: []

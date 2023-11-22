@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74ac6d9dd68704541818696bc85ab3b5, type: 3}
   m_Name: Punch
   m_EditorClassIdentifier: 
-  animationName: Punch
-  alternateStateNames:
-  - PowerPunch
-  animationLayerIndex: 1
+  motionName: Punch
+  alternateNames: []
+  shortable: 0
+  usesMotionSlot: 1
+  motionAnimation: {fileID: 11400000, guid: 541ab006dbea07b4e84a50def63d7261, type: 2}
+  interruptibleMotions:
+  - Backstep
   forwardMovement: 0.3

@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1737c66e08619845be857023854969c, type: 3}
   m_Name: Backstep
   m_EditorClassIdentifier: 
-  animationName: Backstep
-  alternateStateNames: []
-  animationLayerIndex: 1
+  motionName: Backstep
+  alternateNames: []
   shortable: 0
+  usesMotionSlot: 1
+  motionAnimation: {fileID: 11400000, guid: 184b7b7a081e2de4e96e93ed3f1f64d2, type: 2}
+  interruptibleMotions: []
   forwardMovement: -2

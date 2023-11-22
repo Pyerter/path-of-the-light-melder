@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: HSPunch
   m_EditorClassIdentifier: 
   clip: {fileID: 7400000, guid: ac1262a9072a609498ac846749ad081e, type: 2}
+  clipName: WiseOnePunch
+  alternateNames: []

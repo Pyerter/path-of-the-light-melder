@@ -3,29 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Player Motion/Backstep")]
+[CreateAssetMenu(menuName = "Player Motion/Motions/Backstep")]
 public class PMBackstepTrigger : PMAnimationTrigger
 {
     protected float cachedSpeed = 0;
 
-    public override void OnInputMotion(PlayerController controller, InputData input)
+    public override MotionDataModifierFactory ActivateMotion(PlayerController controller, InputData input, StandardControlLocker locker = null)
     {
-        base.OnInputMotion(controller, input);
-        if (controller.MotionController.RB.velocity.x != 0 && controller.MotionController.InputMoving)
+        MotionDataModifierFactory modifierFactory = base.ActivateMotion(controller, input, locker);
+        if (controller.MotionController.InputMoving)
         {
             cachedSpeed = forwardMovement;
             forwardMovement = -forwardMovement;
         }
+        controller.MotionController.Move(controller, forwardMovement * controller.MotionController.ForwardMult);
+        return modifierFactory;
     }
 
-    public override List<MotionDataModifier> CancelMotion(PlayerController controller, MotionData motionData = default)
+    public override MotionDataModifierFactory CancelMotion(PlayerController controller, InputData input = null)
     {
-        List<MotionDataModifier> modifiers = base.CancelMotion(controller, motionData);
+        MotionDataModifierFactory modifierFactory = base.CancelMotion(controller, input);
         if (cachedSpeed != 0)
         {
             forwardMovement = cachedSpeed;
             cachedSpeed = 0;
         }
-        return modifiers;
+        return modifierFactory;
     }
 }

@@ -33,6 +33,8 @@ public class HotSwapState
     {
         HotSwapAnimation old = currentAnimation;
         currentAnimation = animation;
+        animation?.ResetBufferPlay();
+        Debug.Log("Replaced hot swap animation: " + (animation != null ? animation.name : "null"));
         return old;
     }
 }

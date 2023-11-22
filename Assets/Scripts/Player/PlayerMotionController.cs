@@ -150,6 +150,11 @@ public class PlayerMotionController : MonoBehaviour
         inputMoving = true;
     }
 
+    public void StopMoveInput()
+    {
+        inputMoving = false;
+    }
+
     public void CheckFlip(float forward)
     {
         if (lockFlip)
@@ -257,8 +262,7 @@ public class PlayerMotionController : MonoBehaviour
 
         foreach (PlayerMotionPair motionPair in AllMotions)
         {
-            if (motionPair.motion.ActiveMotion)
-                motionPair.motion.UpdateMotion(controller, motionData);
+            motionPair.motion.TryTickMotion(controller, out MotionDataModifierFactory modifierFactory);
         }
 
         return motionData;

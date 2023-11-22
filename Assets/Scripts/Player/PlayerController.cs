@@ -89,7 +89,8 @@ public class PlayerController : MonoBehaviour
 
     public void InputMotion(PlayerMotionPair motionPair, InputData input)
     {
-        List<AnimatorSetting> settings = MotionData.ApplyModifiers(motionPair.motion.InputMotion(this, input, motionPair.control), new MotionData(ComplexAnimator)).AsSettings();
-        ComplexAnimator.AcceptSettings(settings);
+        motionPair.motion.InputMotion(this, input, motionPair.control);
+        //List<AnimatorSetting> settings = MotionData.ApplyModifiers(motionPair.motion.InputMotion(this, input, motionPair.control), new MotionData(ComplexAnimator)).AsSettings();
+        //ComplexAnimator.AcceptSettings(settings);
     }
 }
