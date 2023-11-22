@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Animator), typeof(AnimatorOverrider))]
 public class ComplexAnimator : MonoBehaviour
@@ -14,6 +15,8 @@ public class ComplexAnimator : MonoBehaviour
     [SerializeField] protected ComplexAnimatorHotSwapper hotSwapper;
     public ComplexAnimatorHotSwapper HotSwapper { get { if (hotSwapper == null) hotSwapper = GetComponent<ComplexAnimatorHotSwapper>(); return hotSwapper; } }
 
+    [SerializeField] List<UnityEvent> animationEvents;
+
     private void Awake()
     {
         if (anim == null)
@@ -22,6 +25,8 @@ public class ComplexAnimator : MonoBehaviour
             animOverrider = GetComponent<AnimatorOverrider>();
 
         animOverrider.InitializeAnimator(anim);
+        Anim.keepAnimatorStateOnDisable = true;
+        Anim.writeDefaultValuesOnDisable = true;
     }
 
     public void AcceptSettings(List<AnimatorSetting> settings)
@@ -45,5 +50,19 @@ public class ComplexAnimator : MonoBehaviour
                 return true;
         }
         return false;
+    }
+
+    public void TriggerEvent(int index)
+    {
+        if (index >= animationEvents.Count)
+            return;
+        animationEvents[index].Invoke();
+        Debug.Log("Triggered animation event: " + index);
+    }
+
+    public void ResetSprite(SpriteRenderer spriteRenderer)
+    {
+        spriteRenderer.sprite = null;
+        Debug.Log("Set sprite of " + spriteRenderer.name + " to null.");
     }
 }
