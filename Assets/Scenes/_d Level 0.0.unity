@@ -1992,7 +1992,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shaderController: {fileID: 0}
   flashShaderName: _flash_shader
-  flashShader: {fileID: 0}
+  flashShader: {fileID: -876546973899608171, guid: 510fbe4ff53b16b4c82ec8a011af5899, type: 3}
   flashColor: {r: 0, g: 0, b: 0, a: 0}
   flashFadeSpeed: 0.02
 --- !u!114 &175700975

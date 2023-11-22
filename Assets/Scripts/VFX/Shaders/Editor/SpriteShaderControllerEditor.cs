@@ -30,19 +30,21 @@ public class SpriteShaderControllerEditor : Editor
                 EditorGUILayout.LabelField("Material is null.");
                 continue;
             }
+            EditorGUILayout.BeginVertical();
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(mat.MaterialName);
-            EditorGUILayout.IntField(mat.Index);
+            EditorGUILayout.LabelField(mat.MaterialName + ": " + mat.Index);
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.indentLevel++;
             if (objects.TryGetValue(mat.MaterialName, out SerializedObject obj))
             {
-                EditorGUILayout.ObjectField(obj.FindProperty("material"));
+                EditorGUILayout.PropertyField(obj.FindProperty("material"));
             } else
             {
                 objects.Add(mat.MaterialName, new SerializedObject(mat));
-                //EditorGUILayout.PropertyField(objects[mat.MaterialName].FindProperty("material"));
-                EditorGUILayout.ObjectField(objects[mat.MaterialName].FindProperty("material"));
+                EditorGUILayout.PropertyField(objects[mat.MaterialName].FindProperty("material"));
             }
-            EditorGUILayout.EndHorizontal();
+            EditorGUI.indentLevel--;
+            EditorGUILayout.EndVertical();
         }
         EditorGUI.indentLevel--;
     }

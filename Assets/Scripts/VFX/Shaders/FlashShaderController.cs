@@ -13,7 +13,7 @@ public class FlashShaderController : MonoBehaviour
 
     [SerializeField] protected Material flashShader;
     [SerializeField] protected Color flashColor;
-    [SerializeField] protected float flashFadeSpeed = 0.02f;
+    [SerializeField][Range(0, 0.5f)] protected float flashFadeSpeed = 0.02f;
 
     private void Awake()
     {
@@ -31,7 +31,7 @@ public class FlashShaderController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Flash Shader Controller trying to set the flash shader material but no material is provided.");
+            Debug.LogError("Flash Shader Controller trying to set the flash shader material but no material is provided.");
         }
     }
 
@@ -44,6 +44,8 @@ public class FlashShaderController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (flashShader == null)
+            return;
         float flash = FlashValue;
         if (flash > 0)
         {
