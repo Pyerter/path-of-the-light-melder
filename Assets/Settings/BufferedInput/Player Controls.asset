@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74d897bde107bab448edebbf5d5ab698, type: 3}
+  m_Name: Player Controls
+  m_EditorClassIdentifier: 
+  possibleMasks:
+  - mask: 1
+    name: Player/Move
+  - mask: 2
+    name: Player/Look
+  - mask: 4
+    name: Player/Fire
+  - mask: 8192
+    name: Player/Jump
+  - mask: 16384
+    name: Player/Block
+  - mask: 32768
+    name: Player/Backstep
+  - mask: 8
+    name: UI/Navigate
+  - mask: 16
+    name: UI/Submit
+  - mask: 32
+    name: UI/Cancel
+  - mask: 64
+    name: UI/Point
+  - mask: 128
+    name: UI/Click
+  - mask: 256
+    name: UI/ScrollWheel
+  - mask: 512
+    name: UI/MiddleClick
+  - mask: 1024
+    name: UI/RightClick
