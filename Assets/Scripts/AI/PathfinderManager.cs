@@ -11,16 +11,18 @@ public class PathfinderManager : MonoBehaviour
     [SerializeField] Tilemap groundTilemap;
     public Tilemap GroundTiles { get { return groundTilemap; } }
 
+    protected PlayerController targetPlayer;
+    public PlayerController TargetPlayer { get { if (targetPlayer == null) targetPlayer = FindObjectOfType<PlayerController>(); return targetPlayer; } }
+
+    public Transform PlayerVisionTarget { get { return TargetPlayer.VisionTarget; } }
+
     protected Transform playerTarget;
     public Transform PlayerTarget
     {
         get
         {
             if (playerTarget == null)
-            {
-                PlayerController controller = FindObjectOfType<PlayerController>();
-                playerTarget = controller.PathfinderTarget;
-            }
+                playerTarget = TargetPlayer.PathfinderTarget;
             return playerTarget;
         }
     }

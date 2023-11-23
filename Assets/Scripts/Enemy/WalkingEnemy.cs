@@ -27,6 +27,37 @@ public class WalkingEnemy : MonoBehaviour
 
     [SerializeField][Range(0, 1f)] protected float distanceThresholdToPoint = 0.05f;
 
+    [SerializeField] [Range(0, 100f)] protected float socialAggroRange = 20f;
+    [SerializeField] [Range(0, 1f)] protected float aggroDelayMin = 0.1f;
+    [SerializeField] [Range(0, 1f)] protected float aggroDelayMax = 0.2f;
+    [SerializeField] LayerMask socialAggroLayerMask;
+
+    public void TriggerFollow(EnemyPlayerDetection detector, PlayerController controller)
+    {
+        bool pathfinding = PathManager.RunPathfinding;
+        PathManager.RunPathfinding = true;
+        if (!pathfinding)
+        {
+            Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, socialAggroRange, socialAggroLayerMask);
+            foreach (Collider2D collision in collisions)
+            {
+                if (collision.TryGetComponent<WalkingEnemy>(out WalkingEnemy enemy) && !enemy.PathManager.RunPathfinding)
+                {
+                    Debug.Log("Triggered delayed social aggro.");
+                    float delayMax = Mathf.Clamp(aggroDelayMax, aggroDelayMin, 1);
+                    StartCoroutine(QueueSocialAggro(controller, enemy, GameManager.Time + Random.Range(aggroDelayMin, delayMax)));
+                    break;
+                }
+            }
+        }
+    }
+
+    public IEnumerator QueueSocialAggro(PlayerController controller, WalkingEnemy enemy, float threshold)
+    {
+        yield return new WaitUntil(() => GameManager.Time > threshold);
+        enemy.TriggerFollow(null, controller);
+    }
+
     public void ApplyVelocity()
     {
         Vector2 gravity = Vector2.up * GameManager.Instance.Gravity * gravityScale;

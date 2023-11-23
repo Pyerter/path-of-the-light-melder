@@ -19,6 +19,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] protected Transform pathfinderTarget;
     public Transform PathfinderTarget { get { return pathfinderTarget; } }
 
+    [SerializeField] protected Transform visionTarget;
+    public Transform VisionTarget { get { if (visionTarget == null) visionTarget = transform; return visionTarget; } }
+
     [Header("General Movement Control Lockers")]
     [SerializeField] protected StandardControlLocker runLocker;
     public StandardControlLocker RunLocker { get { return runLocker; } }

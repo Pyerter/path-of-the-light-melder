@@ -10,7 +10,7 @@ public class AStarPathManager : MonoBehaviour
     protected Vector2Int previousTargetCell;
     protected Vector2Int updatedTargetCell;
     protected Vector2 previousPathUpdate;
-    protected bool queueTargetRecalculation = true;
+    protected bool queueTargetRecalculation = false;
 
     protected bool usePreviousPathAsPriority = true;
     public bool UsePreviousPathAsPriority {
@@ -31,24 +31,50 @@ public class AStarPathManager : MonoBehaviour
     protected PathInstance currentPath;
     public PathInstance CurrentPath { get { return currentPath; } }
 
+    protected IEnumerator pathfinderCoroutine;
+
+    protected bool runPathfinding = false;
+    public bool RunPathfinding
+    {
+        get
+        {
+            return runPathfinding;
+        } set
+        {
+            if (runPathfinding != value)
+            {
+                runPathfinding = value;
+                if (runPathfinding)
+                {
+                    queueTargetRecalculation = true;
+                    StartCoroutine(pathfinderCoroutine);
+                } else
+                {
+                    StopCoroutine(pathfinderCoroutine);
+                }
+            }
+        }
+    }
+
     private void Awake()
     {
         if (target == null)
             target = PathfinderManager.Instance.PlayerTarget;
         pathfinder = new AStarPathfinding(PathfinderManager.Instance.GroundTiles, 1, null, PathfinderManager.GetNodeBelow);
         pathfinder.UsePreviousPathAsPriority = usePreviousPathAsPriority;
+        pathfinderCoroutine = CalculatePath();
     }
 
     private void Start()
     {
         // Do an initial path calculation
-        queueTargetRecalculation = false;
-        updatedTargetCell = GetCurrentTargetCell();
-        previousTargetCell = updatedTargetCell;
-        CalculatePathInstance();
+        //queueTargetRecalculation = false;
+        //updatedTargetCell = GetCurrentTargetCell();
+        //previousTargetCell = updatedTargetCell;
+        //CalculatePathInstance();
 
         // Start the coroutine to calculate it intermittently
-        StartCoroutine(CalculatePath());
+        //StartCoroutine(CalculatePath());
     }
 
     public bool ShouldRecalculateTarget()
@@ -90,6 +116,9 @@ public class AStarPathManager : MonoBehaviour
 
     public void CheckShouldRecalculateTarget()
     {
+        if (!runPathfinding)
+            return;
+
         updatedTargetCell = GetCurrentTargetCell();
         if (!previousTargetCell.Equals(updatedTargetCell))
         {
@@ -106,6 +135,12 @@ public class AStarPathManager : MonoBehaviour
     // returns true if there is a remaining target location in the path
     public bool GetPathUpdate(out Vector2 target, float threshold = 0.01f, System.Func<Vector2, Vector2, Vector2, bool> skipNextPositionPredicate = null)
     {
+        if (!currentPath.pathSet)
+        {
+            target = Vector2.zero;
+            return false;
+        }
+
         Vector2 current = new Vector2(transform.position.x, transform.position.y);
         bool hasPath = currentPath.TryTargetAndPosition(current, out target, threshold, skipNextPositionPredicate);
         if (!hasPath)
@@ -119,11 +154,13 @@ public class AStarPathManager : MonoBehaviour
     {
         public List<Vector2> positions;
         public int currentIndex;
+        public bool pathSet;
 
         public PathInstance(List<Vector2> positions, int currentIndex = 0)
         {
             this.positions = positions;
             this.currentIndex = currentIndex;
+            pathSet = true;
         }
 
         public bool TryGetCurrentTarget(out Vector2 target)
