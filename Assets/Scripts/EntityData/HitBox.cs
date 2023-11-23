@@ -33,9 +33,16 @@ public class HitBox : MonoBehaviour
 
     public bool TryHit(Collider2D collider)
     {
-        if (hurtfulEntity.ObjectInAttackLayers(collider.gameObject)
-            && collider.TryGetComponent<HealthyEntity>(out HealthyEntity entity)
-            && TryHitTime(collider))
+        if (!hurtfulEntity.ObjectInAttackLayers(collider.gameObject))
+            return false;
+
+        bool hits = collider.TryGetComponent<HealthyEntity>(out HealthyEntity entity);
+        if (!hits && collider.TryGetComponent<HealthyEntitySupplier>(out HealthyEntitySupplier supplier))
+        {
+            hits = true;
+            entity = supplier.HealthyEntity;
+        }
+        if (hits && TryHitTime(collider))
         {
             hurtfulEntity?.AttackData.Damage(entity);
             return true;

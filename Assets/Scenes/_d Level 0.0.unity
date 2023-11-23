@@ -2802,7 +2802,7 @@ MonoBehaviour:
   health:
     maxHealth: 100
     health: 100
-  destroyOnDeath: 1
+  destroyOnDeath: 0
   onDamaged:
     m_PersistentCalls:
       m_Calls: []

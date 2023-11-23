@@ -11,6 +11,9 @@ public class WalkingEnemy : MonoBehaviour
     [SerializeField] protected Rigidbody2D rb;
     public Rigidbody2D RB { get { if (rb == null) rb = GetComponent<Rigidbody2D>(); return rb; } }
 
+    [SerializeField] protected Animator anim;
+    public Animator Anim { get { return anim; } }
+
     [SerializeField] protected Transform groundLevelTransform;
     public Transform GroundLevelTransform { get { return groundLevelTransform; } }
     public Vector2 GroundLevelPosition { get { return new Vector2(groundLevelTransform.position.x, groundLevelTransform.position.y); } }
@@ -32,6 +35,8 @@ public class WalkingEnemy : MonoBehaviour
     [SerializeField] [Range(0, 1f)] protected float aggroDelayMax = 0.2f;
     [SerializeField] LayerMask socialAggroLayerMask;
 
+    protected bool attacking = false;
+
     public void TriggerFollow(EnemyPlayerDetection detector, PlayerController controller)
     {
         bool pathfinding = PathManager.RunPathfinding;
@@ -52,13 +57,28 @@ public class WalkingEnemy : MonoBehaviour
         }
     }
 
+    public void TriggerAttack(EnemyPlayerDetection detector, PlayerController controller, bool onEnter)
+    {
+        if (!attacking)
+        {
+            attacking = true;
+            anim.SetTrigger("Attack");
+            RB.velocity = Vector2.zero;
+        }
+    }
+
+    public void TriggerAttackStop()
+    {
+        attacking = false;
+    }
+
     public IEnumerator QueueSocialAggro(PlayerController controller, WalkingEnemy enemy, float threshold)
     {
         yield return new WaitUntil(() => GameManager.Time > threshold);
         enemy.TriggerFollow(null, controller);
     }
 
-    public void ApplyVelocity()
+    public void ApplyGravity()
     {
         Vector2 gravity = Vector2.up * GameManager.Instance.Gravity * gravityScale;
         RB.AddForce(gravity, ForceMode2D.Force);
@@ -132,8 +152,11 @@ public class WalkingEnemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        ApplyVelocity();
-        RunToPosition();
-        CheckFlip();
+        ApplyGravity();
+        if (!attacking)
+        {
+            RunToPosition();
+            CheckFlip();
+        }
     }
 }

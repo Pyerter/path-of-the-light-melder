@@ -21,7 +21,7 @@ public class HurtfulEntity : MonoBehaviour
 
     public bool ObjectInAttackLayers(GameObject obj)
     {
-        //return (obj.layer & AttackLayers) > 0;
-        return true;
+        return ((1 << obj.layer) & AttackLayers.value) != 0;
+        //return true;
     }
 }

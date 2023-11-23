@@ -7,7 +7,7 @@ public class EnemyPlayerDetection : MonoBehaviour
 {
     [Header("Trigger Detection")]
     [SerializeField] protected bool useTriggerDetection = true;
-    [SerializeField] protected UnityEvent<EnemyPlayerDetection, PlayerController> onTriggerDetection;
+    [SerializeField] protected UnityEvent<EnemyPlayerDetection, PlayerController, bool> onTriggerDetection;
 
     [Header("Sight Detection")]
     [SerializeField] protected bool useVisionDetection = true;
@@ -18,14 +18,20 @@ public class EnemyPlayerDetection : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (useTriggerDetection)
-            AttemptTriggerDetection(collision);
+            AttemptTriggerDetection(collision, true);
     }
 
-    public void AttemptTriggerDetection(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.TryGetComponent<PlayerController>(out PlayerController controller))
+        if (useTriggerDetection)
+            AttemptTriggerDetection(collision, false);
+    }
+
+    public void AttemptTriggerDetection(Collider2D collision, bool onEnter)
+    {
+        if (collision.TryGetComponent<PlayerReferenceSupplier>(out PlayerReferenceSupplier controller))
         {
-            onTriggerDetection?.Invoke(this, controller);
+            onTriggerDetection?.Invoke(this, controller.Controller, onEnter);
         }
     }
 
