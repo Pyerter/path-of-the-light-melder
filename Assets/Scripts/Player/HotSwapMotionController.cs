@@ -72,7 +72,7 @@ public class HotSwapMotionController : MonoBehaviour
 
     public bool SetCurrentMotion(PlayerMotion motion, PlayerController controller = null)
     {
-        if (CanSetCurrentMotion(motion)&& HotSwapper.TryAddAnimation(motion.MotionAnimation))
+        if (CanSetCurrentMotion(motion) && HotSwapper.TryAddAnimation(motion.MotionAnimation))
         {
             if (currentMotion != null && !MotionOccupiesSlot(motion))
             {

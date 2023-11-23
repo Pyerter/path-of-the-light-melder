@@ -152,9 +152,8 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
 
     public void ForceNextAnimation(HotSwapAnimation animation)
     {
-        CurrentState.ClearState();
-        HotSkipTrigger(true);
-        NextState.TrySetCurrentAnimation(animation, true);
+        SkipAnimation();
+        CurrentState.TrySetCurrentAnimation(animation, true);
     }
 
     public void UpdateStates()

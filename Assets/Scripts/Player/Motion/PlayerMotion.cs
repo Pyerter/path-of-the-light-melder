@@ -115,14 +115,18 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     public virtual bool ShouldCancelMotion(PlayerController controller)
     {
         // Debug.Log("Motion " + MotionName + " occupies slot: " + MotionOccupiesSlot(controller));
-        bool cancelOrNotPlaying = ShouldCancel || (UsesMotionSlot && !MotionActivelyOccupiesSlot(controller));
+        bool cancels = ShouldCancel;
+        bool notPlaying = (UsesMotionSlot && !MotionActivelyOccupiesSlot(controller));
+        bool cancelOrNotPlaying = cancels || notPlaying;
+        // Debug.Log("Not playing " + MotionName + ": " + notPlaying);
         if (cancelOrNotPlaying && (followupAnimations.Count - 1 > motionIndex))
         {
             //Debug.Log("Checking for buffered input on mask: " + cachedInput.Mask.ToStringFormatted(12));
-            if (controller.InputManager.BufferedInputExists(cachedInput.Mask, out InputData input) && input.IsPending())
+            if (controller.InputManager.BufferedInputExists(cachedInput.Mask, out InputData input) && input.IsPending() && input != cachedInput)
             {
                 Debug.Log("Found input for buffered mask: " + cachedInput.Mask.ToStringFormatted(12) + " to continue followup!");
-                input.ProcessStage = InputProcessStage.INTERRUPTED;
+                input.ProcessStage = InputProcessStage.PROCESSING;
+                cachedInput = input;
                 motionIndex++;
                 yieldNextMotion = true;
                 cancelOrNotPlaying = false;
