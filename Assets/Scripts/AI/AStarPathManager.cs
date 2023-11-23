@@ -78,7 +78,7 @@ public class AStarPathManager : MonoBehaviour
         Vector2 start = new Vector2(transform.position.x, transform.position.y);
         Vector2 end = PathfinderManager.GetPlayerTargetCellPosition(pathfinder.Tilemap, target.position);
         PathInstance inst = new PathInstance(pathfinder.FindPositionPath(start, end));
-        Debug.Log("New calculation of path from " + start + " to " + end + " contains " + inst.positions.Count + " positions.");
+        // Debug.Log("New calculation of path from " + start + " to " + end + " contains " + inst.positions.Count + " positions.");
         if (inst.positions.Count > 0)
         {
             currentPath = inst;

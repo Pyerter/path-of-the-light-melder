@@ -19,4 +19,6 @@ MonoBehaviour:
   motionAnimation: {fileID: 11400000, guid: 541ab006dbea07b4e84a50def63d7261, type: 2}
   interruptibleMotions:
   - Backstep
+  aerialEffect: 0
+  groundedEffect: 1
   forwardMovement: 0.3

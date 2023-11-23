@@ -61,12 +61,13 @@ public class HotSwapMotionController : MonoBehaviour
 
     public bool SetCurrentMotion(PlayerMotion motion, PlayerController controller = null)
     {
-        if (CanSetCurrentMotion(motion) && HotSwapper.TryAddAnimation(motion.MotionAnimation))
+        if (CanSetCurrentMotion(motion)&& HotSwapper.TryAddAnimation(motion.MotionAnimation))
         {
-            if (currentMotion != null)
+            if (currentMotion != null && !MotionOccupiesSlot(motion))
             {
                 currentMotion.TryCancelMotion(controller);
-                HotSwapper.HotSkipTrigger(true);
+                HotSwapper.SkipAnimation();
+                Debug.Log("Canceled current motion: " + currentMotion.MotionName);
             }
             currentMotion = motion;
             HotSwapper.PendingHotSwap = motion;

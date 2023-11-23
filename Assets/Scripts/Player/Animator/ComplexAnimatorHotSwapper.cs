@@ -85,10 +85,9 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
 
     public void SkipAnimation()
     {
-        CurrentState.ClearState();
+        HotSkipTrigger(true);
         CurrentIndex = NextIndex;
         changedOverrides = true;
-        HotSkipTrigger(true);
     }
 
     public void UpdateOverrides()
