@@ -8,10 +8,12 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     #region Variables
     [SerializeField] protected string motionName = "PlayerMotion";
     [SerializeField] protected List<string> alternateNames = new List<string>(); // used for clip and state names
-    [SerializeField] protected bool shortable = false; // true if this motion can be stopped short
-    [SerializeField] protected bool usesMotionSlot = true; // true if this motion uses the hot swap motion slot
     [SerializeField] protected HotSwapAnimation motionAnimation;
     [SerializeField] protected List<string> interruptibleMotions = new List<string>();
+    [SerializeField] protected bool shortable = false; // true if this motion can be stopped short
+    [SerializeField] protected bool usesMotionSlot = true; // true if this motion uses the hot swap motion slot
+    [SerializeField] protected bool providesAttackData = false;
+    [SerializeField] protected EntityAttackData attackData = null;
     protected StandardControlLocker cachedLocker;
     protected InputData cachedInput;
     protected bool inMotion = false;
@@ -21,10 +23,11 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     #region Properties
     public string MotionName { get { return motionName; } }
     public IReadOnlyList<string> AlternateNames { get { return alternateNames.AsReadOnly(); } }
-    public bool Shortable { get { return shortable; } }
-    public bool UsesMotionSlot { get { return usesMotionSlot; } }
     public HotSwapAnimation MotionAnimation { get { return motionAnimation; } }
     public IReadOnlyList<string> InterruptibleMotions { get { return interruptibleMotions.AsReadOnly(); } }
+    public bool Shortable { get { return shortable; } }
+    public bool UsesMotionSlot { get { return usesMotionSlot; } }
+    public bool ProvidesAttackData { get { return providesAttackData; } }
     public StandardControlLocker CachedLocker { get { return cachedLocker; } protected set { cachedLocker = value; } }
     public InputData CachedInput { get { return cachedInput; } protected set { cachedInput = value; } }
     public bool InMotion { get { return inMotion; } protected set { inMotion = value; } }
@@ -33,7 +36,13 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
 
     public PlayerMotion GetInstance()
     {
-        return Instantiate(this);
+        PlayerMotion initializedMotion = Instantiate(this);
+        return initializedMotion.Init();
+    }
+
+    protected virtual PlayerMotion Init()
+    {
+        return this;
     }
 
     public abstract MotionDataModifierFactory ActivateMotion(PlayerController controller, InputData input, StandardControlLocker locker = null);
@@ -144,5 +153,10 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     {
         animation = null;
         return false;
+    }
+
+    public virtual EntityAttackData GetAttackData()
+    {
+        return providesAttackData ? attackData : null;
     }
 }

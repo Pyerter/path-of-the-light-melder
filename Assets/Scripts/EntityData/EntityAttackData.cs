@@ -14,12 +14,13 @@ public class EntityAttackData
         this.attackRiders = attackRiders != null ? attackRiders : new List<AttackRider>();
     }
 
-    public void Damage(HealthyEntity entity)
+    public virtual void Damage(HealthyEntity entity)
     {
         entity.Health.Damage(damage);
         foreach (AttackRider attackRider in attackRiders)
         {
             attackRider.OnAttack(entity, this);
         }
+        entity.NotifyDamage(this);
     }
 }

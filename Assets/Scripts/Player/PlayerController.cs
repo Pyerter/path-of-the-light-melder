@@ -94,4 +94,15 @@ public class PlayerController : MonoBehaviour
         //List<AnimatorSetting> settings = MotionData.ApplyModifiers(motionPair.motion.InputMotion(this, input, motionPair.control), new MotionData(ComplexAnimator)).AsSettings();
         //ComplexAnimator.AcceptSettings(settings);
     }
+
+    public EntityAttackData GetAttackData()
+    {
+        if (HotSwapMotionController.CurrentMotion != null)
+        {
+            Debug.Log("Returning attack data for player from " + HotSwapMotionController.CurrentMotion.MotionName);
+            return HotSwapMotionController.CurrentMotion.GetAttackData();
+        }
+        Debug.Log("Attack data for player controller is null.");
+        return null;
+    }
 }

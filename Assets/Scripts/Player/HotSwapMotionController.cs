@@ -7,8 +7,11 @@ public class HotSwapMotionController : MonoBehaviour
     [SerializeField] protected ComplexAnimatorHotSwapper hotSwapper;
     public ComplexAnimatorHotSwapper HotSwapper { get { return hotSwapper; } }
 
-    [SerializeField] protected PlayerMotion currentMotion;
+    protected PlayerMotion currentMotion;
     protected PlayerMotion queuedMotion;
+
+    public PlayerMotion CurrentMotion { get { return currentMotion; } }
+    public PlayerMotion QueuedMotion { get { return queuedMotion; } }
 
     public bool HasCurrentMotion { get { return currentMotion != null; } }
     public bool HasQueuedMotion { get { return queuedMotion != null; } }

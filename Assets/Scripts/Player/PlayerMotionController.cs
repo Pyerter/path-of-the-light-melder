@@ -140,14 +140,22 @@ public class PlayerMotionController : MonoBehaviour
     {
         if (grounded && !jumping)
         {
-            Vector2 velocity = rb.velocity;
-            velocity.y = jumpSpeed;
-            rb.velocity = velocity;
-            jumping.Update(true);
-            aerial = true;
+            ForceJump(controller);
             return true;
         }
         return false;
+    }
+
+    public void ForceJump(PlayerController controller, float value = 1f, bool multiplier = true)
+    {
+        Vector2 velocity = rb.velocity;
+        if (multiplier)
+            velocity.y = jumpSpeed * value;
+        else
+            velocity.y = value;
+        rb.velocity = velocity;
+        jumping.Update(true);
+        aerial = true;
     }
 
     public void Move(PlayerController controller, float movement)
@@ -278,7 +286,7 @@ public class PlayerMotionController : MonoBehaviour
 }
 
 [System.Serializable]
-public struct PlayerMotionPair
+public class PlayerMotionPair
 {
     [SerializeField] public PlayerMotion motion;
     [SerializeField] public BufferedInput.StandardControlLocker control;

@@ -9,16 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74ac6d9dd68704541818696bc85ab3b5, type: 3}
-  m_Name: AerialPunch
+  m_Script: {fileID: 11500000, guid: e506def1ae71f064ea69aa50abf4afd9, type: 3}
+  m_Name: AerialPunchSweep
   m_EditorClassIdentifier: 
   motionName: AerialPunch
   alternateNames: []
-  shortable: 0
-  usesMotionSlot: 1
   motionAnimation: {fileID: 11400000, guid: a428d679c10bb5842b74a3416ce5ead2, type: 2}
   interruptibleMotions:
   - Backstep
+  shortable: 0
+  usesMotionSlot: 1
+  providesAttackData: 1
+  attackData:
+    damage: 15
+    attackRiders: []
   aerialEffect: 1
   groundedEffect: 0
   forwardMovement: 0
+  playerAttackRiders:
+  - {fileID: 11400000, guid: 8a651f2d52a00e7438682eb1dc2e5b82, type: 2}

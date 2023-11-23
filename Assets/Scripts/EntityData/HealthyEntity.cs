@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class HealthyEntity : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class HealthyEntity : MonoBehaviour
     public EntityHealthData Health { get { return health; } }
 
     [SerializeField] protected bool destroyOnDeath = true;
+
+    [SerializeField] protected UnityEvent<int> onDamaged;
 
     private void Awake()
     {
@@ -18,9 +21,9 @@ public class HealthyEntity : MonoBehaviour
                 Destroy(gameObject);
             };
     }
-
-    public int Damage(int amount)
+    
+    public void NotifyDamage(EntityAttackData data)
     {
-        return health.Damage(amount);
+        onDamaged?.Invoke(data.damage);
     }
 }

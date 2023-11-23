@@ -9,16 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74ac6d9dd68704541818696bc85ab3b5, type: 3}
+  m_Script: {fileID: 11500000, guid: e506def1ae71f064ea69aa50abf4afd9, type: 3}
   m_Name: Punch
   m_EditorClassIdentifier: 
   motionName: Punch
   alternateNames: []
-  shortable: 0
-  usesMotionSlot: 1
   motionAnimation: {fileID: 11400000, guid: 541ab006dbea07b4e84a50def63d7261, type: 2}
   interruptibleMotions:
   - Backstep
+  shortable: 0
+  usesMotionSlot: 1
+  providesAttackData: 1
+  attackData:
+    damage: 20
+    attackRiders: []
   aerialEffect: 0
   groundedEffect: 1
   forwardMovement: 0.3
+  playerAttackRiders: []

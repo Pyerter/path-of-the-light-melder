@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AnimatorOverrider : MonoBehaviour
 {
+    [SerializeField] protected bool outputDebug = false;
     protected Animator initialAnim;
     [SerializeField] protected AnimatorOverrideController currentAnim;
     protected RuntimeAnimatorController currentRuntimeController;
@@ -79,7 +80,8 @@ public class AnimatorOverrider : MonoBehaviour
             }
             clipsDebugMessage += "\n";
         }
-        Debug.Log(clipsDebugMessage);
+        if (outputDebug)
+            Debug.Log(clipsDebugMessage);
         currentAnim.ApplyOverrides(overrides);
     }
 }
