@@ -9,6 +9,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     [SerializeField] protected string motionName = "PlayerMotion";
     [SerializeField] protected List<string> alternateNames = new List<string>(); // used for clip and state names
     [SerializeField] protected HotSwapAnimation motionAnimation;
+    [SerializeField] protected List<HotSwapAnimation> followupAnimations = new List<HotSwapAnimation>();
     [SerializeField] protected List<string> interruptibleMotions = new List<string>();
     [SerializeField] protected bool shortable = false; // true if this motion can be stopped short
     [SerializeField] protected bool usesMotionSlot = true; // true if this motion uses the hot swap motion slot
@@ -18,12 +19,15 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     protected InputData cachedInput;
     protected bool inMotion = false;
     protected bool shouldCancel = false;
+    protected int motionIndex = 0;
+    protected bool yieldNextMotion = false;
     #endregion
 
     #region Properties
     public string MotionName { get { return motionName; } }
     public IReadOnlyList<string> AlternateNames { get { return alternateNames.AsReadOnly(); } }
     public HotSwapAnimation MotionAnimation { get { return motionAnimation; } }
+    public IReadOnlyList<HotSwapAnimation> FollowupAnimations { get { return followupAnimations.AsReadOnly(); } }
     public IReadOnlyList<string> InterruptibleMotions { get { return interruptibleMotions.AsReadOnly(); } }
     public bool Shortable { get { return shortable; } }
     public bool UsesMotionSlot { get { return usesMotionSlot; } }
@@ -66,6 +70,8 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
             CachedLocker = locker;
             ClaimMotionSlot(controller);
             InMotion = true;
+            motionIndex = -1;
+            yieldNextMotion = false;
             return ActivateMotion(controller, input, locker);
         }
         if (ShouldAcceptInputUpdate(controller, input))
@@ -96,6 +102,11 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
         return controller.HotSwapMotionController.MotionOccupiesSlot(this);
     }
 
+    public virtual bool MotionActivelyOccupiesSlot(PlayerController controller)
+    {
+        return controller.HotSwapMotionController.MotionActivelyOccupiesSlot(this);
+    }
+
     public virtual bool ShouldCancelMotion(PlayerController controller, InputData input)
     {
         return Shortable && input.IsReleased();
@@ -104,7 +115,22 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     public virtual bool ShouldCancelMotion(PlayerController controller)
     {
         // Debug.Log("Motion " + MotionName + " occupies slot: " + MotionOccupiesSlot(controller));
-        return ShouldCancel || (UsesMotionSlot && !MotionOccupiesSlot(controller));
+        bool cancelOrNotPlaying = ShouldCancel || (UsesMotionSlot && !MotionActivelyOccupiesSlot(controller));
+        if (cancelOrNotPlaying && (followupAnimations.Count - 1 > motionIndex))
+        {
+            //Debug.Log("Checking for buffered input on mask: " + cachedInput.Mask.ToStringFormatted(12));
+            if (controller.InputManager.BufferedInputExists(cachedInput.Mask, out InputData input) && input.IsPending())
+            {
+                Debug.Log("Found input for buffered mask: " + cachedInput.Mask.ToStringFormatted(12) + " to continue followup!");
+                input.ProcessStage = InputProcessStage.INTERRUPTED;
+                motionIndex++;
+                yieldNextMotion = true;
+                cancelOrNotPlaying = false;
+            }
+        }
+        if (cancelOrNotPlaying)
+            cancelOrNotPlaying = MotionOccupiesSlot(controller);
+        return cancelOrNotPlaying;
     }
 
     public virtual bool TryCancelMotion(PlayerController controller)
@@ -149,11 +175,29 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
         return UpdateMotion(controller);
     }
 
+    // Hot Swap Supplier interface
+    public virtual string SupplierName { get { return MotionName; } }
+
     public virtual bool QueryHotSwap(ComplexAnimatorHotSwapper hotSwapper, out HotSwapAnimation animation)
     {
+        //Debug.Log("Querying hot swap.");
+        if (motionIndex <= followupAnimations.Count - 1)
+        {
+            if (yieldNextMotion)
+            {
+                animation = followupAnimations[motionIndex];
+                yieldNextMotion = false;
+            }
+            else
+                animation = null;
+            return true;
+        }
         animation = null;
+        //Debug.Log("Hot swap query being removed.");
         return false;
     }
+
+    // Attack data supplier
 
     public virtual EntityAttackData GetAttackData()
     {

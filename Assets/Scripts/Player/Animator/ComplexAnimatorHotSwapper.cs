@@ -49,14 +49,39 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
     }
     public bool MatchesCurrentState(PlayerMotion motion)
     {
-        bool nullCheck = (motion == null) || (CurrentState == null);
-        if (nullCheck)
-            return (motion == null) && (CurrentState == null);
+        if (motion == null)
+            return CurrentState.CurrentAnimation == null;
 
+        bool pendingHotSwapMatches = pendingHotSwap != null && pendingHotSwap.SupplierName.Equals(motion.SupplierName);
         if (CurrentState.NoAnimation)
-            return false;
+            return pendingHotSwapMatches;
 
-        return CurrentState.CurrentAnimation.ClipName.Equals(motion.MotionAnimation.ClipName);
+        return pendingHotSwapMatches || CurrentClipMatchesClipFrom(motion);
+    }
+
+    public bool CurrentClipMatchesClipFrom(PlayerMotion motion)
+    {
+        bool currentMotionEquals = CurrentState.CurrentAnimation.ClipName.Equals(motion.MotionAnimation.ClipName);
+        if (!currentMotionEquals)
+        {
+            foreach (HotSwapAnimation hotSwapAnim in motion.FollowupAnimations)
+            {
+                if (hotSwapAnim.ClipName.Equals(CurrentState.CurrentAnimation.ClipName))
+                {
+                    currentMotionEquals = true;
+                    break;
+                }
+            }
+        }
+        return currentMotionEquals;
+    }
+
+    public bool CurrentStateEquals(PlayerMotion motion)
+    {
+        if (motion == null || CurrentState.NoAnimation)
+            return motion == null && CurrentState.NoAnimation;
+        //Debug.Log("Current state animation: " + CurrentState.CurrentAnimation.ClipName);
+        return CurrentClipMatchesClipFrom(motion);
     }
 
     protected bool changedOverrides = false;

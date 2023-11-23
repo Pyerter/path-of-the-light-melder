@@ -29,6 +29,14 @@ public class HotSwapMotionController : MonoBehaviour
         return currentMotion.MotionName.Equals(motion.MotionName);
     }
 
+    public bool MotionActivelyOccupiesSlot(PlayerMotion motion)
+    {
+        bool nullCheck = (currentMotion == null) || (motion == null);
+        if (nullCheck)
+            return (currentMotion == null) && (motion == null);
+        return HotSwapper.CurrentStateEquals(motion);
+    }
+
     public void CheckToRemoveCurrentMotion()
     {
         if (!VerifyCurrentMotionPlaying())
@@ -98,6 +106,7 @@ public class HotSwapMotionController : MonoBehaviour
     {
         if (HotSwapper.MatchesCurrentState(motion) && RemoveCurrentMotion(motion, true))
         {
+            Debug.Log("Cancelled motion from HotSwapMotionController: " + motion.MotionName);
             return true;
         }
         return false;
@@ -131,6 +140,7 @@ public class HotSwapMotionController : MonoBehaviour
         if (HasQueuedMotion && !HasCurrentMotion && SetCurrentMotion(queuedMotion))
         {
             queuedMotion = null;
+            Debug.Log("Moved queued motion to current.");
             return true;
         }
         return false;

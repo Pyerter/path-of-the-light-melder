@@ -29,6 +29,7 @@ public class PMAnimationTrigger : PlayerMotion
             controller.AddLocker(locker);
         }
         controller.MotionController.LockFlip = true;
+        Debug.Log("Activated motion: " + MotionName);
         return default;
     }
 
@@ -46,6 +47,8 @@ public class PMAnimationTrigger : PlayerMotion
             controller.HotSwapMotionController.RemoveCurrentMotion(this, true);
         }
         cancellingEarly = false;
+
+        Debug.Log("Cancelled motion: " + MotionName);
 
         return default;
     }
