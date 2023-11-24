@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(SignalAcceptor))]
 public class HealthyEntity : MonoBehaviour
 {
     [SerializeField] protected EntityHealthData health;
@@ -12,8 +13,14 @@ public class HealthyEntity : MonoBehaviour
 
     [SerializeField] protected UnityEvent<int> onDamaged;
 
+    [SerializeField] protected SignalAcceptor signalAcceptor;
+    public SignalAcceptor SignalAcceptor { get { return signalAcceptor; } }
+
     private void Awake()
     {
+        if (signalAcceptor == null)
+            signalAcceptor = GetComponent<SignalAcceptor>();
+
         Health.RestoreToFull();
         if (destroyOnDeath)
             Health.onDeath += () =>
