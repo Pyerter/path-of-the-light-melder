@@ -109,7 +109,9 @@ public class WalkingEnemy : MonoBehaviour
         }
         else
         {
-            RB.velocity = Vector2.zero;
+            Vector2 velocity = RB.velocity;
+            velocity.x = 0;
+            RB.velocity = velocity;
             //Debug.Log("No path left.");
         }
     }
