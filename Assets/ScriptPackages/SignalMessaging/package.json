@@ -1,0 +1,11 @@
+{
+    "name": "pyerter.squires.signalmessaging",
+    "version": "1.0.0",
+    "description": "This package provides a framework for sending optionally accepted signals to different receivers.",
+    "displayName": "Signal Messaging",
+    "unity": "2022.3",
+    "author": "Porter Squires",
+    "dependencies": {
+    },
+    "hideInEditor": false
+}

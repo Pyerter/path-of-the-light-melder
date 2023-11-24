@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using SignalMessaging;
 
 [RequireComponent(typeof(SignalAcceptor))]
 public class HealthyEntity : MonoBehaviour
