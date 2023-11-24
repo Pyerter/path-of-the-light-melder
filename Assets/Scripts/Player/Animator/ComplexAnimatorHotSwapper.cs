@@ -13,9 +13,31 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
     [SerializeField] protected string hotSkipTrigger = "HotSkipTrigger";
 
     public bool HotBool { get { return ComplexAnim.Anim.GetBool(hotBool); } set { ComplexAnim.Anim.SetBool(hotBool, value); } }
-    public void HotTrigger(bool trig) { if (trig) ComplexAnim.Anim.SetTrigger(hotTrigger); else ComplexAnim.Anim.ResetTrigger(hotTrigger); }
-    public void HotSkipTrigger(bool trig) { if (trig) { ComplexAnim.Anim.SetTrigger(hotSkipTrigger); CurrentState?.ClearState(); } else ComplexAnim.Anim.ResetTrigger(hotSkipTrigger); }
+    public void HotTrigger(bool trig)
+    {
+        if (trig)
+        {
+            //ComplexAnim.Anim.SetTrigger(hotTrigger);
+            if (ValidateEmptyQueue())
+                complexAnim.Anim.Play(hotSwapIdle, hotSwapLayer);
+            //Debug.Log("Hot Trigger: Reset Hot Swapper animation index to 0.");
+        }
+        else
+            ComplexAnim.Anim.ResetTrigger(hotTrigger);
+    }
+    public void HotSkipTrigger(bool trig)
+    {
+        if (trig)
+        {
+            //Debug.Log("Skip trigger on animation.");
+            CurrentState?.ClearState();
+            ComplexAnim.Anim.SetTrigger(hotSkipTrigger);
+        }
+        else 
+            ComplexAnim.Anim.ResetTrigger(hotSkipTrigger);
+    }
 
+    [SerializeField] protected string hotSwapIdle = "HotSwapIdle";
     [SerializeField] protected HotSwapState hotSwapState1;
     [SerializeField] protected HotSwapState hotSwapState2;
     [SerializeField] protected HotSwapState hotSwapState3;
@@ -135,11 +157,12 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
 
     protected void AddAnimation(HotSwapAnimation animation)
     {
+        //bool hasCurrent = CurrentState.NoAnimation;
         int targetIndex = CurrentState.NoAnimation ? CurrentIndex : NextIndex;
         this[targetIndex].TrySetCurrentAnimation(animation);
         HotBool = true;
         changedOverrides = true;
-        //Debug.Log("Added animation");
+        //Debug.Log("Added animation: " + animation.ClipName + " to " + (hasCurrent ? "current state " : "next state ") + targetIndex);
     }
 
     public bool TryAddAnimation(HotSwapAnimation animation)
@@ -167,18 +190,26 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
             return;
 
         HotBool = true; // if validations have succeeded, ensure HotBool is true
-        
         // Update the current state to move along if it's done
-        bool currentStateIsPlaying = CurrentState.CurrentAnimation.ClipIsPlaying(this) || HotSwapStateIsName(CurrentState.StateName);
+        bool clipPlaying = CurrentState.CurrentAnimation.ClipIsPlaying(this);
+        bool stateIsPlaying = HotSwapStateIsName(CurrentState.StateName);
+        bool currentStateIsPlaying = clipPlaying || stateIsPlaying;
+        /*for (int i = 0; i < Length; i++)
+            if (HotSwapStateIsName(this[i].StateName))
+                Debug.Log("Animator current state: " + this[i].StateName);
+        Debug.Log("Current animation clip (state " + (CurrentIndex + 1) + ") is: " + CurrentState.CurrentAnimation.ClipName + ".\n Clip is " + 
+            (clipPlaying ? "" : "not ") + "playing.\n State is " + (stateIsPlaying ? "" : "not ") + "active.");*/
         if (CurrentState.HasAnimation && !currentStateIsPlaying)
         {
             CurrentState.ClearState();
             changedOverrides = true;
             CurrentIndex = NextIndex;
+            //Debug.Log("Removing current animation clip from hot swapper.");
         }
 
         if (QueueReady && QueryPendingHotSwap(out HotSwapAnimation animation))
         {
+            //Debug.Log("Adding animation from query: " + animation.ClipName);
             AddAnimation(animation);
         }
 
@@ -192,7 +223,10 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
     public bool ValidateCurrentAnimations()
     {
         if (CurrentState.NoAnimation)
+        {
             CurrentIndex = NextIndex;
+            //Debug.Log("Skipped current state while validating current animations.");
+        }
         bool hasAnimation = CurrentState.HasAnimation;
         if (!hasAnimation)
         {
@@ -217,6 +251,8 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
             if (this[current].HasAnimation)
             {
                 CurrentIndex = current;
+                changedOverrides = true;
+                //Debug.Log("In empty queue validation found animation at index " + current);
                 return false;
             }
         }
@@ -224,6 +260,7 @@ public class ComplexAnimatorHotSwapper : MonoBehaviour
         CurrentIndex = 0;
         if (QueryPendingHotSwap(out HotSwapAnimation animation))
         {
+            //Debug.Log("Added animation from query during empty queue validation: " + animation.ClipName);
             AddAnimation(animation);
             return false;
         }

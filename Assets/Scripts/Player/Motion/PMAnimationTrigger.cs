@@ -29,7 +29,7 @@ public class PMAnimationTrigger : PlayerMotion
             controller.AddLocker(locker);
         }
         controller.MotionController.LockFlip = true;
-        Debug.Log("Activated motion: " + MotionName);
+        //Debug.Log("Activated motion: " + MotionName);
         return default;
     }
 
@@ -48,7 +48,7 @@ public class PMAnimationTrigger : PlayerMotion
         }
         cancellingEarly = false;
 
-        Debug.Log("Cancelled motion: " + MotionName);
+        //Debug.Log("Cancelled motion: " + MotionName);
 
         return default;
     }

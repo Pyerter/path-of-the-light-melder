@@ -124,7 +124,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
             //Debug.Log("Checking for buffered input on mask: " + cachedInput.Mask.ToStringFormatted(12));
             if (controller.InputManager.BufferedInputExists(cachedInput.Mask, out InputData input) && input.IsPending() && input != cachedInput)
             {
-                Debug.Log("Found input for buffered mask: " + cachedInput.Mask.ToStringFormatted(12) + " to continue followup!");
+                //Debug.Log("Found input for buffered mask: " + cachedInput.Mask.ToStringFormatted(12) + " to continue followup!");
                 input.ProcessStage = InputProcessStage.PROCESSING;
                 cachedInput = input;
                 motionIndex++;
@@ -170,7 +170,7 @@ public abstract class PlayerMotion : ScriptableObject, HotSwapSupplier
     {
         if (ShouldCancelMotion(controller))
         {
-            //Debug.Log("Cancelling motion " + MotionName);
+            //Debug.Log("Cancelling motion " + MotionName + " from the motion.");
             InMotion = false;
             ShouldCancel = false;
             controller.HotSwapMotionController.TryCancelCurrentMotion(this);

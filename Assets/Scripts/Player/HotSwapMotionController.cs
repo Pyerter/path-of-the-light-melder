@@ -78,7 +78,7 @@ public class HotSwapMotionController : MonoBehaviour
             {
                 currentMotion.TryCancelMotion(controller);
                 HotSwapper.SkipAnimation();
-                Debug.Log("Canceled current motion: " + currentMotion.MotionName);
+                //Debug.Log("Canceled current motion: " + currentMotion.MotionName);
             }
             currentMotion = motion;
             HotSwapper.PendingHotSwap = motion;
@@ -106,7 +106,7 @@ public class HotSwapMotionController : MonoBehaviour
     {
         if (HotSwapper.MatchesCurrentState(motion) && RemoveCurrentMotion(motion, true))
         {
-            Debug.Log("Cancelled motion from HotSwapMotionController: " + motion.MotionName);
+            //Debug.Log("Cancelled motion from HotSwapMotionController: " + motion.MotionName);
             return true;
         }
         return false;
