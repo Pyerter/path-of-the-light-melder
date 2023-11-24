@@ -91,6 +91,11 @@ public class PathNode
         staleFlag = false;
     }
 
+    public static Vector2Int operator+(PathNode a, PathNode b)
+    {
+        return a.position + b.position;
+    }
+
     public static Vector2Int operator -(PathNode a, PathNode b)
     {
         return a.position - b.position;
@@ -108,6 +113,19 @@ public class PathNode
         if ((a is null) || (b is null))
             return (a is null) != (b is null);
         return !a.position.Equals(b.position);
+    }
+
+    public override bool Equals(object obj)
+    {
+        PathNode node = obj as PathNode;
+        if (node == null)
+            return false;
+        return this == node;
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
     }
 
     public bool StandablePosition(Tilemap tilemap, int height = 1, int heightOffset = 0)
