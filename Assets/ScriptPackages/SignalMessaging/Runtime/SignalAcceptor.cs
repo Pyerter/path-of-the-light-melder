@@ -30,34 +30,16 @@ namespace SignalMessaging
         [SerializeField] protected List<SignalEvent> signalEvents = new List<SignalEvent>();
         public IReadOnlyList<SignalEvent> SignalEvents { get { return signalEvents.AsReadOnly(); } }
 
-        public bool TriggerSignal(string signalName)
+        public bool TriggerSignal(SignalData signalData)
         {
             bool triggered = false;
             foreach (SignalEvent signalEvent in signalEvents)
             {
-                if (signalName.Equals(signalEvent.signalName))
-                {
+                //Debug.Log("Attempting to trigger signal " + signalEvent.SignalName + " with signal data " + signalData.SignalName);
+                if (signalData.TryTriggerEvent(signalEvent))
                     triggered = true;
-                    signalEvent.signalEvent?.Invoke(signalName);
-                }
             }
             return triggered;
-        }
-
-        public static void ParseSignalData(string signalName,
-            out Dictionary<string, float> floatValues,
-            out Dictionary<string, int> intValues,
-            out Dictionary<string, string> stringValues,
-            out Dictionary<string, bool> boolValues)
-        {
-            floatValues = new Dictionary<string, float>();
-            intValues = new Dictionary<string, int>();
-            stringValues = new Dictionary<string, string>();
-            boolValues = new Dictionary<string, bool>();
-
-            // TODO: read in values based on signal data delim and operators
-            // the signals will carry variables similar to URL parameters in the format
-            // signalName?f:floatVar=2.1&i:intVar=2&s:stringVar=geaig&b:trueBoolVar=true
         }
     }
 }

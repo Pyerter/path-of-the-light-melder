@@ -6,80 +6,74 @@ using UnityEngine.Events;
 
 namespace SignalMessaging
 {
-    public struct SignalData
+    public class SignalData
     {
-        [SerializeField] public Dictionary<string, float> floatValues;
-        [SerializeField] public Dictionary<string, int> intValues;
-        [SerializeField] public Dictionary<string, string> stringValues;
-        [SerializeField] public Dictionary<string, bool> boolValues;
+        [SerializeField] protected string signalName;
+        public string SignalName { get { return signalName; } }
+        [SerializeField] protected Dictionary<string, BaseSignalParameter> valueDict;
+        public Dictionary<string, BaseSignalParameter>.KeyCollection ValueDictKeys { get { return valueDict.Keys; } }
+        public Dictionary<string, BaseSignalParameter>.ValueCollection ValueDictValues { get { return  valueDict.Values; } }
 
-        public SignalData(string signalName)
+        public SignalData(string signalName, List<BaseSignalParameter> parameters)
         {
-            SignalAcceptor.ParseSignalData(signalName, out floatValues, out intValues, out stringValues, out boolValues);
+            this.signalName = signalName;
+            valueDict = new Dictionary<string, BaseSignalParameter>();
+            foreach (BaseSignalParameter param in parameters)
+            {
+                valueDict.TryAdd(param.ParamName, param);
+            }
         }
 
+        public static SignalData ReadSignalData(string signal)
+        {
+            SignalScribe scribe = SignalScribe.Instance;
+            if (scribe == null)
+            {
+                Debug.LogWarning("Trying to read signal data but no SignalScribe has claimed itself as the SignalScribe.Instance.");
+                return null;
+            }
+            return scribe.ParseSignal(signal);
+        }
+
+        public bool TryReadParameter<T>(string key, out SignalParameter<T> typedParam)
+        {
+            key = key.ToLower();
+            typedParam = default;
+
+            bool valueExists = valueDict.TryGetValue(key, out BaseSignalParameter param);
+            if (!valueExists) return false;
+
+            bool typeMatches = BaseSignalParameter.TryGetSignalParameter<T>(param, out typedParam);
+            if (!typeMatches)
+                Debug.LogWarning("Trying to read value " + key + " from SignalData, but type " + typeof(T).ToString() + " does not match real type: " + param.BaseParamType.ParamType.ToString());
+            return typeMatches;
+        }
+        
         public bool TryReadValue<T>(string key, out T value)
         {
-            value = ReadValue<T>(key, out bool success);
-            return success;
+            value = default;
+
+            bool paramExists = TryReadParameter<T>(key, out SignalParameter<T> typedParam);
+            if (!paramExists) return false;
+
+            value = typedParam.Value;
+            return true;
         }
 
         public T ReadValue<T>(string key)
         {
-            return ReadValue<T>(key, out bool success);
+            TryReadValue<T>(key, out T value);
+            return value;
         }
 
-        public T ReadValue<T>(string key, out bool success)
+        public bool TryTriggerEvent(SignalEvent signalEvent)
         {
-            // TODO: create a class like SignalParameter that will allow for the usage of custom parameter types
-            // For example, reading a Vector2, the SignalParameter for Vector2 would provide a unique signal data symbol
-            // and a parsing function.
-            // To accomodate this, SignalData will need to be changed to instead store a Dictionary<string, Dictionary<string, type>>
-            // where the dictionary maps a type string to dictionaries that store certain types.
-            success = false;
-            Type varType = typeof(T);
-            if (varType == typeof(float))
+            if (SignalName.Equals(signalEvent.SignalName.ToLower()) && signalEvent.SignalDataEvent != null)
             {
-                float val = 0f;
-                if (floatValues.TryGetValue(key, out float value))
-                {
-                    val = value;
-                    success = true;
-                }
-                return (T)Convert.ChangeType(val, typeof(T));
+                signalEvent.SignalDataEvent.Invoke(this);
+                return true;
             }
-            if (varType == typeof(int))
-            {
-                int val = 0;
-                if (intValues.TryGetValue(key, out int value))
-                {
-                    val = value;
-                    success = true;
-                }
-                return (T)Convert.ChangeType(val, typeof(T));
-            }
-            if (varType == typeof(string))
-            {
-                string val = "";
-                if (stringValues.TryGetValue(key, out string value))
-                {
-                    val = value;
-                    success = true;
-                }
-                return (T)Convert.ChangeType(val, typeof(T));
-            }
-            if (varType == typeof(bool))
-            {
-                bool val = false;
-                if (boolValues.TryGetValue(key, out bool value))
-                {
-                    val = value;
-                    success = true;
-                }
-                return (T)Convert.ChangeType(val, typeof(T));
-            }
-            Debug.LogError("Tried reading a value from SignalData of type " + varType.ToString() + " when that type does not match float, int, string, or bool.");
-            return default;
+            return false;
         }
     }
 }

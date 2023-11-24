@@ -7,15 +7,17 @@ using UnityEngine.Events;
 namespace SignalMessaging
 {
     [Serializable]
-    public struct SignalEvent
+    public class SignalEvent
     {
-        [SerializeField] public string signalName;
-        [SerializeField] public UnityEvent<string> signalEvent;
+        [SerializeField] protected string signalName;
+        public string SignalName { get { return signalName; } }
+        [SerializeField] protected UnityEvent<SignalData> signalDataEvent;
+        public UnityEvent<SignalData> SignalDataEvent { get { return signalDataEvent; } }
 
-        public SignalEvent(string signalName, UnityEvent<string> signalEvent)
+        public SignalEvent(string signalName, UnityEvent<SignalData> signalDataEvent)
         {
             this.signalName = signalName;
-            this.signalEvent = signalEvent;
+            this.signalDataEvent = signalDataEvent;
         }
     }
 }

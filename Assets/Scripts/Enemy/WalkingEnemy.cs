@@ -1,3 +1,4 @@
+using SignalMessaging;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -160,5 +161,11 @@ public class WalkingEnemy : MonoBehaviour
             RunToPosition();
             CheckFlip();
         }
+    }
+
+    public void AcceptKnockback(SignalData signal)
+    {
+        Debug.Log("Accepted signal " + signal.SignalName + " with force " + signal.ReadValue<float>("force"));
+        //Debug.Log("Type of float is " + typeof(float));
     }
 }

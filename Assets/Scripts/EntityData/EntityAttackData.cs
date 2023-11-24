@@ -1,3 +1,4 @@
+using SignalMessaging;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -20,7 +21,8 @@ public class EntityAttackData
         entity.NotifyDamage(this);
         foreach (string signal in attackSignals)
         {
-            entity.SignalAcceptor.TriggerSignal(signal);
+            SignalData signalData = SignalData.ReadSignalData(signal);
+            entity.SignalAcceptor.TriggerSignal(signalData);
         }
     }
 }

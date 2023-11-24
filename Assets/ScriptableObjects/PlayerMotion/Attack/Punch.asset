@@ -25,6 +25,8 @@ MonoBehaviour:
   attackData:
     damage: 20
     attackRiders: []
+    attackSignals:
+    - knockback?f:force=2.1
   aerialEffect: 0
   groundedEffect: 1
   forwardMovement: 0.3
