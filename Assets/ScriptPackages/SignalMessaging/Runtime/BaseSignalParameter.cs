@@ -15,9 +15,7 @@ namespace SignalMessaging
 
         public static SignalParameter<T> GetSignalParameter<T>(BaseSignalParameter baseSignalParameter)
         {
-            if (BaseSignalParameterType.TryGetSignalParameterType<T>(baseSignalParameter.BaseParamType, out SignalParameterType<T> parameterType))
-                return baseSignalParameter as SignalParameter<T>;
-            return null;
+            return baseSignalParameter as SignalParameter<T>;
         }
 
         public abstract BaseSignalParameterType BaseParamType { get; }
