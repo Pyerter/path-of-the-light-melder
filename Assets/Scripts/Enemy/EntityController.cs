@@ -22,4 +22,7 @@ public class EntityController : MonoBehaviour
         if (anim == null)
             anim = GetComponentInChildren<Animator>();
     }
+
+    // TODO: Add fixedupdate calling behavior manager methods and create hooks for triggering
+    // the pathfinding from running and not
 }
