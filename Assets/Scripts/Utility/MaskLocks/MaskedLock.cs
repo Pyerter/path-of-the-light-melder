@@ -11,10 +11,12 @@ namespace MaskedLocks
         [SerializeField] protected string lockName = "MaskedLock";
         [SerializeField] protected int priority = 0;
         [SerializeField][HideInInspector] protected List<MaskedLockKey> keys = new List<MaskedLockKey>();
-        public MaskedLockScheme LockScheme { get { return lockScheme; } }
-        public IReadOnlyList<MaskedLockKey> Keys { get { return keys.AsReadOnly(); } }
 
+        public MaskedLockScheme LockScheme { get { return lockScheme; } }
+        public string LockName { get { return lockName; } }
+        public int Priority { get { return priority; } }
         public int Count { get { return keys.Count; } }
+        public IReadOnlyList<MaskedLockKey> Keys { get { return keys.AsReadOnly(); } }
 
         protected bool compositeKeyUpdated = false;
         protected MaskedLockKey compositeKey;

@@ -15,6 +15,7 @@ namespace MaskedLocks
         public int Count { get { return lockKeys.Count; } }
 
         [SerializeField] protected Dictionary<string, MaskedLockKey> keyDict;
+        protected Dictionary<string, MaskedLockKey> KeyDict { get { if (keyDict == null) RebuildKeyDict(); return keyDict; } }
 
         public void OnValidate()
         {
@@ -59,12 +60,12 @@ namespace MaskedLocks
 
         public uint GetMask(string key)
         {
-            return keyDict.TryGetValue(key, out MaskedLockKey mask) ? mask.mask : 0;
+            return KeyDict.TryGetValue(key, out MaskedLockKey mask) ? mask.mask : 0;
         }
 
         public bool TryGetMask(string key, out uint mask)
         {
-            if (keyDict.TryGetValue(key, out MaskedLockKey lockKey))
+            if (KeyDict.TryGetValue(key, out MaskedLockKey lockKey))
             {
                 mask = lockKey.mask;
                 return true;
@@ -75,12 +76,12 @@ namespace MaskedLocks
 
         public MaskedLockKey GetLockKey(string key)
         {
-            return keyDict.TryGetValue(key, out MaskedLockKey lockKey) ? lockKey : emptyKey;
+            return KeyDict.TryGetValue(key, out MaskedLockKey lockKey) ? lockKey : emptyKey;
         }
 
         public bool TryGetLockKey(string key, out  MaskedLockKey lockKey)
         {
-            if (keyDict.ContainsKey(key))
+            if (KeyDict.ContainsKey(key))
             {
                 lockKey = keyDict[key];
                 return true;

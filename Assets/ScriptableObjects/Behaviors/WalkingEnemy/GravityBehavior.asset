@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c467eff3a964cf4fb20c96004d0b9c5, type: 3}
+  m_Name: GravityBehavior
+  m_EditorClassIdentifier: 
+  behaviorName: behavior
+  maskedLock: {fileID: 11400000, guid: 6da45c676ea33bc4e932fdbbc03856d0, type: 2}
+  gravityScale: 3

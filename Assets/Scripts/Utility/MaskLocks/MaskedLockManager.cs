@@ -94,8 +94,17 @@ namespace MaskedLocks
             return overrides;
         }
 
-        // TODO: Add code to add locks only if currentLockMask & newLock == 0
-        // and check if a lock currently exists in this set of locks
+        public bool CanAddLock(MaskedLockKey key)
+        {
+            List<MaskedLockKey> overlaps = GetOverlappingLocks(key.mask);
+            return PriorityOverrides(overlaps, key.priority);
+        }
+
+        public bool TryAddLock(MaskedLockKey key)
+        {
+            return TryAddLock(key, out List<MaskedLockKey> overlaps);
+        }
+
         public bool TryAddLock(MaskedLockKey key, out List<MaskedLockKey> overlaps)
         {
             overlaps = GetOverlappingLocks(key.mask);
