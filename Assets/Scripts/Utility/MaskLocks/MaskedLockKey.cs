@@ -19,6 +19,26 @@ namespace MaskedLocks
             this.priority = priority;
         }
 
+        public static uint operator &(uint left, MaskedLockKey right)
+        {
+            return left & right.mask;
+        }
+
+        public static uint operator &(MaskedLockKey left, uint right)
+        {
+            return left.mask & right;
+        }
+
+        public static uint operator |(uint left, MaskedLockKey right)
+        {
+            return left | right.mask;
+        }
+
+        public static uint operator |(MaskedLockKey left, uint right)
+        {
+            return left.mask | right;
+        }
+
         public static uint operator +(MaskedLockKey left, MaskedLockKey right)
         {
             return left.mask | right.mask;
