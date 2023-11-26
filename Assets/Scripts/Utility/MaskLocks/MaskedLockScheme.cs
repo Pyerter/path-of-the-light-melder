@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace MaskedLocks
 {
+    [CreateAssetMenu(menuName = "Masked Locks/Lock Scheme")]
     public class MaskedLockScheme : ScriptableObject
     {
         protected static MaskedLockKey emptyKey = new MaskedLockKey("Empty", 0);
@@ -11,6 +12,7 @@ namespace MaskedLocks
 
         [SerializeField] protected List<MaskedLockKey> lockKeys = new List<MaskedLockKey>();
         public IReadOnlyList<MaskedLockKey> LockKeys { get { return lockKeys.AsReadOnly(); } }
+        public int Count { get { return lockKeys.Count; } }
 
         [SerializeField] protected Dictionary<string, MaskedLockKey> keyDict;
 
@@ -31,6 +33,8 @@ namespace MaskedLocks
         {
             uint o = 1;
             bool updated = false;
+            if (keyDict == null || keyDict.Count != lockKeys.Count)
+                updated = true;
             for (int i = 0; i < lockKeys.Count; i++)
             {
                 uint current = o << i;
@@ -76,7 +80,13 @@ namespace MaskedLocks
 
         public bool TryGetLockKey(string key, out  MaskedLockKey lockKey)
         {
-            return keyDict.TryGetValue(key, out lockKey);
+            if (keyDict.ContainsKey(key))
+            {
+                lockKey = keyDict[key];
+                return true;
+            }
+            lockKey = EmptyKey;
+            return false;
         }
     }
 }

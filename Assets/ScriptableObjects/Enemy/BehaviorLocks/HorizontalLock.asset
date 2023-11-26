@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2085334fa2587142ba941ceae36eb0d, type: 3}
+  m_Name: HorizontalLock
+  m_EditorClassIdentifier: 
+  lockScheme: {fileID: 11400000, guid: 0050230d4aa0c2841ada993a085071a9, type: 2}
+  lockName: Horiz
+  priority: 0
+  keys:
+  - key: Horizontal
+    priority: 0
+    mask: 1
