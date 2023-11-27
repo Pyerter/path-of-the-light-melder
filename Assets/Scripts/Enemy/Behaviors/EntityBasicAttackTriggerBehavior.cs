@@ -58,5 +58,7 @@ public class EntityBasicAttackTriggerBehavior : EntityTriggerDetectionBehavior
     {
         if (detected && !BehaviorActive)
             receivedTrigger = detected;
+        else if (!detected && !BehaviorActive)
+            receivedTrigger = detected;
     }
 }
