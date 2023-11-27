@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 public class AStarPathManager : MonoBehaviour
 {
     [SerializeField] protected Transform target;
+    public Transform Target { get { return target; } }
     protected AStarPathfinding pathfinder;
     protected Vector2Int previousTargetCell;
     protected Vector2Int updatedTargetCell;

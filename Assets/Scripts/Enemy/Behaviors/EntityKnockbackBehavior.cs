@@ -29,7 +29,8 @@ public class EntityKnockbackBehavior : EntitySignalBehavior
     public override void InitiateBehavior(EntityController controller)
     {
         base.InitiateBehavior(controller);
-        float xDirection = controller.Flipped ? 1 : -1;
+        float xDiff = controller.PathManager.Target.position.x - controller.transform.position.x;
+        float xDirection = -Mathf.Sign(xDiff);
         float strength = force * knockbackStrengthMultiplier;
         Debug.Log("Knocked back with force " + force + " and strength " + strength);
         Vector2 knockbackVelocity = new Vector2(1 - knockbackUpPercentage, knockbackUpPercentage);
