@@ -118,6 +118,19 @@ public class EntityBehaviorManager : MonoBehaviour
         }
     }
 
+    public bool TryAddActiveBehavior(EntityController controller, EntityBehavior behavior)
+    {
+        if (!behavior.BehaviorActive
+                && (!behavior.UsesLock || LockManager.CanAddLock(behavior.MaskedLock.Key))
+                && behavior.BehaviorPredicate(controller)
+                && (!behavior.UsesLock || LockManager.TryAddLock(behavior.MaskedLock.Key)))
+        {
+            AddActiveBehavior(controller, behavior);
+            return true;
+        }
+        return false;
+    }
+
     public void AddActiveBehavior(EntityController controller, EntityBehavior behavior)
     {
         if (!behavior.BehaviorActive)
@@ -183,6 +196,7 @@ public class EntityBehaviorManager : MonoBehaviour
     public void LoopBehaviorsUpdate(EntityController controller)
     {
         CheckBehaviorsInitiate(controller);
+        CheckBehaviorsEnded(controller);
         UpdateBehaviors(controller);
         CheckBehaviorsEnded(controller);
     }

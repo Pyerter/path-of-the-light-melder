@@ -419,9 +419,9 @@ MonoBehaviour:
     signalDataEvent:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: WalkingEnemy, Assembly-CSharp
-          m_MethodName: AcceptKnockback
+        - m_Target: {fileID: 7932930809968313617}
+          m_TargetAssemblyTypeName: EntityBehaviorSignalAccepto, Assembly-CSharp
+          m_MethodName: AcceptSignal
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -624,6 +624,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7968807249725964681}
+  - component: {fileID: 7932930809968313617}
   m_Layer: 7
   m_Name: Detection
   m_TagString: Untagged
@@ -647,6 +648,20 @@ Transform:
   - {fileID: 1308920320715802333}
   m_Father: {fileID: 6326711543862446504}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7932930809968313617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6802316721074426714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8eee2a0f0121974ba8d900f2f2444e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 5356859997182645016}
+  behaviorSignal: {fileID: 11400000, guid: a575e2c36bc38724683d3801a6a7f681, type: 2}
 --- !u!1 &8110089497506120613
 GameObject:
   m_ObjectHideFlags: 0

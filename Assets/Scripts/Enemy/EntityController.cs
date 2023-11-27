@@ -27,6 +27,7 @@ public class EntityController : MonoBehaviour
     public EntityBehaviorManager BehaviorManager { get { if (behaviorManager == null) behaviorManager = GetComponent<EntityBehaviorManager>(); return behaviorManager; } }
 
     protected bool flipped = false;
+    public bool Flipped { get { return flipped; } }
 
     public void CheckFlip()
     {

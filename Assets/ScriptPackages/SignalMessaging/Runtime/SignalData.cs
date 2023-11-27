@@ -66,6 +66,13 @@ namespace SignalMessaging
             return value;
         }
 
+        public T ReadValue<T>(string key, T defaultValue)
+        {
+            if (TryReadValue(key, out T value))
+                return value;
+            return defaultValue;
+        }
+
         public bool TryTriggerEvent(SignalEvent signalEvent)
         {
             if (SignalName.Equals(signalEvent.SignalName.ToLower()) && signalEvent.SignalDataEvent != null)
