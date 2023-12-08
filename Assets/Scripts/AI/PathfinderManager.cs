@@ -69,8 +69,12 @@ public class PathfinderManager : MonoBehaviour
 
     public static Vector2Int GetNodeBelow(Tilemap tilemap, Vector2Int pos)
     {
+        return GetNodeBelow(tilemap, pos, 10);
+    }
+
+    public static Vector2Int GetNodeBelow(Tilemap tilemap, Vector2Int pos, int maxSearchBelow)
+    {
         Vector3Int previousSafe = new Vector3Int(pos.x, pos.y, 0);
-        int maxSearchBelow = 10;
         if (tilemap.HasTile(previousSafe))
             return pos;
         for (int i = 0; i >= -maxSearchBelow; i--)

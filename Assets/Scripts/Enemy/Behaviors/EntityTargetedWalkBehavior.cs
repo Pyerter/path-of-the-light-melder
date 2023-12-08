@@ -11,6 +11,9 @@ public class EntityTargetedWalkBehavior : EntityBehavior
     [SerializeField][Range(0, 15f)] protected float jumpSpeed = 4f;
     public float JumpSpeed { get { return jumpSpeed; } }
 
+    [SerializeField] protected LayerMask groundMask;
+    [SerializeField][Range(0, 1)] protected float distanceToGround = 0.6f;
+
     public override bool BehaviorPredicate(EntityController controller)
     {
         return true;
@@ -58,8 +61,13 @@ public class EntityTargetedWalkBehavior : EntityBehavior
     public bool ShouldJump(EntityController controller, Vector2 targetLocation)
     {
         bool targetAboveLevel = PathfinderManager.Instance.GetGridPosition(targetLocation).y > PathfinderManager.Instance.GetGridPosition(controller.GroundLevelPosition).y;
+        if (!targetAboveLevel)
+            return false;
         bool notJumping = controller.velocity.y <= 0.05f;
-        return targetAboveLevel && notJumping;
+        if (!notJumping)
+            return false;
+        bool grounded = Physics2D.Raycast(controller.transform.position, Vector2.down, distanceToGround, groundMask);
+        return grounded;
     }
 
     public static bool PointIsLevelAndFurther(Vector2 currentPosition, Vector2 currentTarget, Vector2 nextTarget)
